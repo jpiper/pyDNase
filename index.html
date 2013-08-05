@@ -1,0 +1,96 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>pyDNase by jpiper</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>pyDNase</h1>
+        <p>a python library for analyzing DNAse-seq data</p>
+
+        <p class="view"><a href="https://github.com/jpiper/pyDNase">View the Project on GitHub <small>jpiper/pyDNase</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/jpiper/pyDNase/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/jpiper/pyDNase/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/jpiper/pyDNase">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1></h1>
+
+<h1>
+<a name="pydnase---a-library-for-analyzing-dnase-seq-data" class="anchor" href="#pydnase---a-library-for-analyzing-dnase-seq-data"><span class="octicon octicon-link"></span></a>pyDNase - a library for analyzing DNAse-seq data</h1>
+
+<h2>
+<a name="introduction" class="anchor" href="#introduction"><span class="octicon octicon-link"></span></a>Introduction</h2>
+
+<p>Many people currently analyzing DNase-seq data are using tools designed for ChIP-seq work, but may be innapropriate for DNAse-seq data where one is less interested in the overlaps of sequenced fragments, but the site at which the cut occurs (the 5' most end of the aligned sequence fragment).</p>
+
+<p>We have developed <code>pyDNase</code> to interface with a sorted and indexed BAM file from a DNase-seq experiment, allowing efficient and easy random access of DNase-seq cut data from any genomic location, e.g.</p>
+
+<pre><code>&gt;&gt;&gt; import pyDNase
+&gt;&gt;&gt; reads = pyDNase.BAMHandler("pyDNase/test/data/example.bam")
+&gt;&gt;&gt; reads["chr6",170863500:170863532]
+{'+': array([0,0,0,0,1,0,0,1,1,2,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,1,1,0,0,0]),
+ '-': array([0,10,1,0,1,0,4,9,0,1,0,2,1,0,0,0,0,0,3,0,6,3,0,0,0,1,1,1,3,0,3,6])}
+</code></pre>
+
+<p>Querying the <code>BAMHandler</code> object returns a dictionary containing numpy arrays with DNase cut counts on the positive reference strand (+), and cuts on the negative reference strand (-). <code>pyDNase</code> efficiently caches the cut data queried, so that multiple requests from the same genomic locations do not require repeated lookups from the BAM file (this can be disabled).</p>
+
+<p><code>pyDNase</code> comes with several analysis scripts covering several common use cases of DNase-seq analysis, and also an implementation of the Wellington and Wellington 1D footprinting algorithms.</p>
+
+<p>to install <code>pyDNase</code> is as easy as::</p>
+
+<pre><code>$ pip install pyDNase
+</code></pre>
+
+<p>for full documentation go to: <a href="http://pythonhosted.org/pyDNase/">http://pythonhosted.org/pyDNase/</a></p>
+
+<h2>
+<a name="contributions" class="anchor" href="#contributions"><span class="octicon octicon-link"></span></a>Contributions</h2>
+
+<p>I highly encourage contributions! This is my first software development project - send any pull requests this way. I'm particularly interested in cool analysis scripts that anyone has written.</p>
+
+<h2>
+<a name="reference" class="anchor" href="#reference"><span class="octicon octicon-link"></span></a>Reference</h2>
+
+<p>If you use <code>pyDNase</code> or the Wellington algorithm in your work, please cite the following paper.</p>
+
+<p>Piper et al. 2013. <em>Wellington: A novel method for the accurate identification of digital genomic footprints from DNase-seq data</em>, Nucleic Acids Research XXX(XXX):XXX-XXX</p>
+
+<h2>
+<a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>License</h2>
+
+<p>Copyright (C) 2013 Jason Piper. This work is licensed under the GNU GPLv3 license, see <code>LICENCE.TXT</code> for details.</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/jpiper">jpiper</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-42970620-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
