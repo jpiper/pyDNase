@@ -41,9 +41,9 @@
 <p>We have developed <code>pyDNase</code> to interface with a sorted and indexed BAM file from a DNase-seq experiment, allowing efficient and easy random access of DNase-seq cut data from any genomic location, e.g.</p>
 
 <pre><code>&gt;&gt;&gt; import pyDNase
-&gt;&gt;&gt; reads = pyDNase.BAMHandler("pyDNase/test/data/example.bam")
-&gt;&gt;&gt; reads["chr6",170863500:170863532]
-{'+': array([0,0,0,0,1,0,0,1,1,2,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,1,1,0,0,0]),
+&gt;&gt;&gt; reads = pyDNase.BAMHandler(pyDNase.example_reads())
+&gt;&gt;&gt; reads["chr6,170863500,170863532,+"]
+{'+': array([0,0,0,1,0,0,1,1,2,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,1,1,0,0,0,1]),
  '-': array([0,10,1,0,1,0,4,9,0,1,0,2,1,0,0,0,0,0,3,0,6,3,0,0,0,1,1,1,3,0,3,6])}
 </code></pre>
 
