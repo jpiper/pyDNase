@@ -11,20 +11,7 @@
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-    <script type="text/javascript">
-        var _gaq = _gaq || [];
-        _gaq.push(['_setAccount', 'UA-42970620-1']);
-        _gaq.push(['_trackPageview']);
-  
-        (function() {
-          var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-          ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-          var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-      })();
-    </script>
-    
   </head>
-  <meta name="google-site-verification" content="P29h5eivA3A7Rw-ZvwLA7q0MVHxkO50Jo1JR0DxzGJU" />
   <body>
     <div class="wrapper">
       <header>
@@ -44,12 +31,12 @@
         <h1></h1>
 
 <h1>
-<a name="pydnase---a-library-for-analyzing-dnase-seq-data" class="anchor" href="#pydnase---a-library-for-analyzing-dnase-seq-data"><span class="octicon octicon-link"></span></a>pyDNase - a library for analyzing DNAse-seq data</h1>
+<a name="pydnase---a-library-for-analyzing-dnase-seq-data" class="anchor" href="#pydnase---a-library-for-analyzing-dnase-seq-data"><span class="octicon octicon-link"></span></a>pyDNase - a library for analyzing DNase-seq data</h1>
 
 <h2>
 <a name="introduction" class="anchor" href="#introduction"><span class="octicon octicon-link"></span></a>Introduction</h2>
 
-<p>Many people currently analyzing DNase-seq data are using tools designed for ChIP-seq work, but may be innapropriate for DNAse-seq data where one is less interested in the overlaps of sequenced fragments, but the site at which the cut occurs (the 5' most end of the aligned sequence fragment).</p>
+<p>Many people currently analyzing DNase-seq data are using tools designed for ChIP-seq work, but may be inappropriate for DNase-seq data where one is less interested in the overlaps of sequenced fragments, but the site at which the cut occurs (the 5' most end of the aligned sequence fragment).</p>
 
 <p>We have developed <code>pyDNase</code> to interface with a sorted and indexed BAM file from a DNase-seq experiment, allowing efficient and easy random access of DNase-seq cut data from any genomic location, e.g.</p>
 
@@ -64,12 +51,17 @@
 
 <p><code>pyDNase</code> comes with several analysis scripts covering several common use cases of DNase-seq analysis, and also an implementation of the Wellington and Wellington 1D footprinting algorithms.</p>
 
-<p>to install <code>pyDNase</code> is as easy as::</p>
+<p>to install <code>pyDNase</code>, ensure <a href="http://www.numpy.org/%E2%80%8E">NumPy</a> is installed, and run::</p>
 
 <pre><code>$ pip install pyDNase
 </code></pre>
 
 <p>for full documentation go to: <a href="http://pythonhosted.org/pyDNase/">http://pythonhosted.org/pyDNase/</a></p>
+
+<h2>
+<a name="support" class="anchor" href="#support"><span class="octicon octicon-link"></span></a>Support</h2>
+
+<p>If you're having any troubles, please send an email to <code>j.piper@warwick.ac.uk</code> and I'll do my best to help you out. If you notice any bugs, then please raise an issue over at the github repo.</p>
 
 <h2>
 <a name="contributions" class="anchor" href="#contributions"><span class="octicon octicon-link"></span></a>Contributions</h2>
@@ -93,5 +85,17 @@
         <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
       </footer>
     </div>
+    <script src="javascripts/scale.fix.js"></script>
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-42970620-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
   </body>
 </html>
