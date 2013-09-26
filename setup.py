@@ -1,5 +1,13 @@
 __author__ = 'Jason Piper'
 
+#Unfortunately, we have to ensure that the user has numpy is installed,
+#as pip is bad at installing numpy and scipy at the same time, and just breaks
+
+try:
+    import numpy
+except ImportError:
+    raise ImportError("Due to a quirk with pip, pyDNase requires numpy to be installed before starting setup")
+    
 try:
     from setuptools import setup, Extension
 except ImportError:
@@ -22,13 +30,14 @@ setup(
     ],
 
     #Uses a custom version of clint that has a time estimator on the progress bar
-    dependency_links = ["http://github.com/jpiper/clint/tarball/develop#egg=clint-0.3.1dev"],
+    dependency_links = ["http://github.com/jpiper/clint/tarball/develop#egg=clint-0.3.0p"],
 
     install_requires=[
         "numpy",
         "scipy",
         "matplotlib",
         "pysam",
+        "clint==0.3.0p"
     ],
     
     package_data = {'pyDNase':["data/*"]},

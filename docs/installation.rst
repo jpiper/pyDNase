@@ -51,7 +51,7 @@ on their system. I have attempted to list them in the order that you need to ins
             $ curl https://raw.github.com/pypa/pip/master/contrib/get-pip.py | python
 
 #. Cython_
-    * Provided you installed the above, you should be able to simply run ::
+    * Provided you installed pip_, you should be able to simply run ::
 
         $ pip install Cython
 
@@ -59,6 +59,12 @@ on their system. I have attempted to list them in the order that you need to ins
     * **On OS X** the simplest way to install samtools_ is using the homebrew_ command ``brew tap homebrew/science``
    followed by ``brew install homebrew/science/samtools``.
     * **On Ubuntu** you can use ``sudo apt-get install samtools``
+    
+#. NumPy_
+    * Provided you installed pip_, you should be able to simply run ::
+
+        $ pip install numpy
+
 
 Installing :mod:`pyDNase`
 ~~~~~~~~~~~~~~~~~~~~~~~~~
