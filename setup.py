@@ -1,0 +1,44 @@
+__author__ = 'Jason Piper'
+
+try:
+    from setuptools import setup, Extension
+except ImportError:
+    from distutils.core import setup
+    from distutils.extension import Extension
+
+setup(
+    name='pyDNase',
+    version="0.1.0",
+    description='DNase-seq analysis library',
+    long_description=open('README.rst',"rt").read(),
+    author='Jason Piper',
+    author_email='j.piper@warwick.ac.uk',
+    url='http://jpiper.github.io/pyDNase',
+    license='GPLv3',
+    ext_modules = [Extension("pyDNase/footprinting/fastbinom", ["pyDNase/footprinting/fastbinom.c"])],
+    packages= [
+        'pyDNase',
+        'pyDNase.footprinting',
+    ],
+
+    #Uses a custom version of clint that has a time estimator on the progress bar
+    dependency_links = ["http://github.com/jpiper/clint/tarball/develop#egg=clint-0.3.1dev"],
+
+    install_requires=[
+        "numpy",
+        "scipy",
+        "matplotlib",
+        "pysam",
+    ],
+    
+    package_data = {'pyDNase':["data/*"]},
+    
+    scripts=[
+        "pyDNase/scripts/dnase_average_profile.py",
+        "pyDNase/scripts/dnase_to_javatreeview.py",
+        "pyDNase/scripts/dnase_wig_tracks.py",
+        "pyDNase/scripts/wellington_footprints.py",
+        "pyDNase/scripts/examples/example_footprint_scores.py"],
+    
+    test_suite="test",
+)

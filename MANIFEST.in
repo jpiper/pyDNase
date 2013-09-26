@@ -1,0 +1,4 @@
+include pyDNase/footprinting/fastbinom.pyx
+include pyDNase/footprinting/fastbinom.c
+include pyDNase/footprinting/fastbinom.h
+include test/*
