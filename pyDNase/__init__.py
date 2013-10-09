@@ -396,7 +396,7 @@ class GenomicInterval(object):
     Basic Object which describes reads region of the genome
     """
 
-    #This counts how many GenomicInterval objects have been created so that each GenomicInterval can have reads label.
+    #This counts how many GenomicInterval objects have been created
     counter = 0
 
     def __init__(self, chrom, start, stop, label = 0,score = 0,strand="+"):
@@ -428,7 +428,7 @@ class GenomicInterval(object):
         self.score      = float(score)
 
         if self.startbp > self.endbp:
-            raise Exception("End location of GenomicInterval is bigger than Start location!")
+            raise Exception("Start location of GenomicInterval is larger than end location!")
 
         # This is from reads bygone era where we ordered the intervals by import order
         # self.score      = self.__class__.counter

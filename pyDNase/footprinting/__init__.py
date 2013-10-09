@@ -107,17 +107,18 @@ class wellington(object):
             halffpround = int((fp_size-1)/2)
             fw_fpscores_dict[fp_size] = [0] * halffpround + [sum(i) for i in self.window(forwardArray, fp_size)]
             rv_fpscores_dict[fp_size] = [0] * halffpround + [sum(i) for i in self.window(backwardArray,fp_size)]
+
+       #Empty list of lists for storing the footprint scores
         log_probs       = [[] for i in range(len(forwardArray))]
 
         if bonferroni:
             bonferroni_factor = np.log(1.0/sum(reads.samfile.lengths))
+
         #testing multiple background sizes
         for shoulder_size in shoulder_sizes:
             #This computes the background cut sums for the specified shoulder_size for all basepairs
             f_bindingArray = [0] * (shoulder_size - 1) + [sum(i) for i in self.window(forwardArray,shoulder_size)]
             b_bindingArray = [sum(i) for i in self.window(backwardArray,shoulder_size)] + [0] * (shoulder_size - 1)
-
-            #Empty list of lists for storing the footprint scores
 
             for fp_size in footprint_sizes:
                 halffpround = int((fp_size-1)/2)
@@ -190,7 +191,7 @@ class wellington1D(wellington):
                     #This requires that there are actually tags present in these windows
                     if x:
                         p = (shoulder_size*2) / float((shoulder_size*2) + fp_size)
-                        #This stores the P values and the fp_size used to calculate them in reads tuple. in the log_probs[] list
+                        #This stores the p values and the fp_size used to calculate them in reads tuple. in the log_probs[] list
                         score = binom.logsf(int(x - 1), int(n), p)
                         log_probs[i].append([score,fp_size])
         #This iterates over all the base pairs in the region and creates arrays for the best score and footprint size
