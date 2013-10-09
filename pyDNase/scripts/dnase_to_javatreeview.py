@@ -16,12 +16,14 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import argparse, pyDNase, csv
+import numpy as np
 from clint.textui import puts, progress
 parser = argparse.ArgumentParser(description='Writes a JavaTreeView file based on the regions in reads BED file and the reads in reads BAM file')
 parser.add_argument("-w", "--window_size", help="Size of flanking area around centre of the regions to plot (default: 100)",default=100,type=int)
 parser.add_argument("-i",action="store_true", help="Ignores strand information in BED file",default=False)
 parser.add_argument("-o",action="store_true", help="Orders output the same as the input (default: orders by FOS)",default=False)
 parser.add_argument("-a",action="store_true", help="Write absolute cut counts instead strand imbalanced counts",default=False)
+parser.add_argument("-n",action="store_true", help="Normalise the cut data for each region between 0 and 1",default=False)
 parser.add_argument("regions", help="BED file of the regions you want to generate the heatmap for")
 parser.add_argument("reads", help="The BAM file containing the read data")
 parser.add_argument("output", help="filename to write the CSV output to")
@@ -58,7 +60,12 @@ puts("Writing to JTV...")
 for i in progress.bar(sorted(regions, key = sorter)):
     cuts = reads[i]
     if args.a:
-        newarray = (cuts["+"] + cuts["-"]).tolist()
+        newarray = (cuts["+"] + cuts["-"])
     else:
-        newarray = (cuts["+"] - cuts["-"]).tolist()
-    outfile.writerow(["NULL","NULL",i.chromosome + ":" + str(i.startbp) + ":" + str(i.endbp)] + newarray)
+        newarray = (cuts["+"] - cuts["-"])
+
+    if args.n:
+        newarray = np.array(newarray,dtype="float")
+        newarray = ((newarray - newarray.min()) / (newarray.max() - newarray.min()))
+
+    outfile.writerow(["NULL","NULL",i.chromosome + ":" + str(i.startbp) + ":" + str(i.endbp)] + newarray.tolist())
