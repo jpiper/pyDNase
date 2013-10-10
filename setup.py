@@ -16,7 +16,7 @@ except ImportError:
 
 setup(
     name='pyDNase',
-    version="0.1.0",
+    version="0.1.0dev",
     description='DNase-seq analysis library',
     long_description=open('README.rst',"rt").read(),
     author='Jason Piper',
@@ -47,7 +47,8 @@ setup(
         "pyDNase/scripts/dnase_to_javatreeview.py",
         "pyDNase/scripts/dnase_wig_tracks.py",
         "pyDNase/scripts/wellington_footprints.py",
-        "pyDNase/scripts/examples/example_footprint_scores.py"],
+        "pyDNase/scripts/examples/example_footprint_scores.py",
+        "pyDNase/scripts/examples/dnase_to_JSON.py"],
     
     test_suite="test",
 )
