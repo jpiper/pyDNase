@@ -18,11 +18,11 @@
 import argparse, pyDNase
 from clint.textui import puts, progress
 parser = argparse.ArgumentParser(description='Writes a JSON file of DNase I cuts for regions from a  BED file')
-parser.add_argument("-w", "--window_size", help="Resize all regions to a specific length",default=False,type=int)
+parser.add_argument("-w", "--window_size", help="Resize all regions to a specific length",default = 0, type=int)
 parser.add_argument("-i",action="store_true", help="Ignores strand information in BED file",default=False)
 parser.add_argument("regions", help="BED file of the regions")
 parser.add_argument("reads", help="BAM file containing the read data")
-parser.add_argument("output", help="filename to write the JASON output to")
+parser.add_argument("output", help="filename to write the JSON output to")
 args = parser.parse_args()
 
 reads = pyDNase.BAMHandler(args.reads)
@@ -35,6 +35,8 @@ if args.i:
 if args.window_size:
     puts("Resizing Regions to {}".format(args.window_size))
     regions.resizeRegions(toSize=args.window_size)
+
+#TODO: this will load everything everything into memory, it's probably worth making the option to write directly to disk
 
 outfile = open(args.output,"w")
 outarr = []
