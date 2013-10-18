@@ -19,20 +19,20 @@ import argparse
 import pyDNase
 import numpy as np
 import matplotlib as mpl
+from clint.textui import progress, puts
 #Required for headless operation
 mpl.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
 
 parser = argparse.ArgumentParser(description='Plots average profile of DNase activity surrounding a list of regions in a BED file')
-parser.add_argument("-w", "--window_size", help="Size of flanking area around centre of the regions to plot (default: 200)",default=200,type=int)
+parser.add_argument("-w", "--window_size", help="Size of flanking area around centre of the regions to plot (default: 100)",default=100,type=int)
 parser.add_argument("-i",action="store_true", help="Ignores any strand information in BED file and plots data relative to reference strand",default=False)
 parser.add_argument("regions", help="BED file of the regions you want to generate the average profile for")
 parser.add_argument("reads", help="The BAM file containing the DNase-seq data")
 parser.add_argument("output", help="filename to write the output to")
 args  = parser.parse_args()
 
-xsize   = args.window_size
 reads   = pyDNase.BAMHandler(args.reads)
 regions = pyDNase.GenomicIntervalSet(args.regions)
 
@@ -41,13 +41,13 @@ if args.i:
     for each in regions:
         each.strand = "+"
 
-for each in regions:
-    each.score = reads.FOS(each)
-regions.resizeRegions(xsize)
+puts("Resizing Regions to {}".format(args.window_size))
+regions.resizeRegions(args.window_size)
 
 fw = []
 rv = []
-for each in regions:
+puts("Reading Data from BAM file...")
+for each in progress.bar(regions):
     if reads[each]["+"].sum() and reads[each]["-"].sum():
         fw.append(reads[each]["+"])
         rv.append(reads[each]["-"])
