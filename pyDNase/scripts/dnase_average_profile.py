@@ -58,18 +58,20 @@ plt.plot(np.mean(rv,axis=0),c="green")
 rcParams['xtick.major.pad'] = 20 
 rcParams['ytick.major.pad'] = 20 
 
-#Sort out the X axis
-ticks = [0,xsize,xsize*2]
-labels = [-xsize,0,xsize]
+#Sort out the X axis ticks
+ticks = [0,args.window_size,args.window_size*2]
+labels = [-args.window_size,0,args.window_size]
 plt.xticks(ticks, labels)
+
+#Make the yaxis start from 0
+plt.gca().set_ylim(0)
 
 #Makes ticks only appear on the left hand side
 plt.gca().yaxis.set_ticks_position('left')
 
-#Remove top, right, and bottom borders
+#Remove top and right borders
 plt.gca().spines['top'].set_visible(False)
 plt.gca().spines['right'].set_visible(False)
-#plt.gca().spines['bottom'].set_visible(False)
 
 plt.gca().tick_params(axis='both', which='major', labelsize=32)
 
