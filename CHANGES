@@ -1,0 +1,9 @@
+0.1.1 - 2013-12-05
+==================
+Misc. small bug fixes
+Fixed Python 2.6 Compatability
+Added JSON export script
+
+0.1.0 - 2013-09-01
+==================
+Initial Release
