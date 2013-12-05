@@ -12,7 +12,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 import os
 import numpy as np
@@ -51,13 +51,16 @@ class BAMHandler(object):
         try:
             self.samfile = pysam.Samfile(filePath)
         except IOError:
-            errorString = "Unable to load BAM file:{}".format(filePath)
+            errorString = "Unable to load BAM file:{0}".format(filePath)
             raise IOError(errorString)
 
         #Initialise the empty DNase cut cache with the chromosome names from the BAM file
-        self.cutCache    =  {i:{"+":{},"-":{}} for i in self.samfile.references}
+        self.cutCache = {}
         #This helps us differentiate between what's been looked up and when there's just no reads
-        self.lookupCache = {i:[] for i in self.samfile.references}
+        self.lookupCache = {}
+        for i in self.samfile.references:
+            self.cutCache[i]    = {"+":{},"-":{}}
+            self.lookupCache[i] = []
         #Do not change the CHUNK_SIZE after object instantiation!
         self.CHUNK_SIZE  = chunkSize
         self.CACHING     = caching
@@ -179,7 +182,7 @@ class BAMHandler(object):
             A float with the FOS - returns 10000 if it can't calculate it
         """
 
-        cuts = self["{},{},{},{}".format(interval.chromosome,interval.startbp-bgsize,interval.endbp+bgsize,interval.strand)]
+        cuts = self["{0},{1},{2},{3}".format(interval.chromosome,interval.startbp-bgsize,interval.endbp+bgsize,interval.strand)]
         forwardArray, backwardArray     = cuts["+"], cuts["-"]
         cutArray     = (forwardArray + backwardArray)
 
@@ -236,7 +239,7 @@ class GenomicIntervalSet(object):
         try:
             BEDfile = open(filename, 'rU')
         except IOError:
-            errorString = "Cannot load BED file: {}".format(filename)
+            errorString = "Cannot load BED file: {0}".format(filename)
             raise IOError(errorString)
 
         puts_err("Reading BED File...")
@@ -264,7 +267,7 @@ class GenomicIntervalSet(object):
             Exception
         """
         #TODO: Make a new exception class, something like malformedBEDException?
-        exceptionString = "Malformed BED line: {}".format(BEDString)
+        exceptionString = "Malformed BED line: {0}".format(BEDString)
         raise Exception(exceptionString)
 
     def __parseBEDString(self,BEDString):
@@ -437,7 +440,7 @@ class GenomicInterval(object):
         if label:
             self.label = str(label)
         else:
-            self.label     = "Unnamed{}".format(self.__class__.counter)
+            self.label     = "Unnamed{0}".format(self.__class__.counter)
 
         #This contains anything else you want to store about the interval
         self.metadata = {}
@@ -446,7 +449,7 @@ class GenomicInterval(object):
         """
         BED representation of the interval
         """
-        return "{}\t{}\t{}\t{}\t{}\t{}".format(self.chromosome, self.startbp, self.endbp, self.label, self.score, self.strand)
+        return "{0}\t{1}\t{2}\t{3}\t{4}\t{5}".format(self.chromosome, self.startbp, self.endbp, self.label, self.score, self.strand)
 
     def __len__(self):
         """

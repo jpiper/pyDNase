@@ -33,7 +33,7 @@ if args.i:
         each.strand = "+"
 
 if args.window_size:
-    puts("Resizing Regions to {}".format(args.window_size))
+    puts("Resizing Regions to {0}".format(args.window_size))
     regions.resizeRegions(toSize=args.window_size)
 
 #TODO: this will load everything everything into memory, it's probably worth making the option to write directly to disk
