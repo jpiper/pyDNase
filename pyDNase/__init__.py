@@ -251,9 +251,7 @@ class GenomicIntervalSet(object):
         for _ in progress.bar(range(intervalCount)):
             line    = BEDfile.readline()
             #Skip lines in the bed files which are UCSC track metadata or comments
-            if self.__isBEDHeader(line):
-                continue
-            else:
+            if not self.__isBEDHeader(line):
                 records.append(self.__parseBEDString(line))
 
         for i in records:
