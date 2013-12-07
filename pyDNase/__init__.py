@@ -246,12 +246,14 @@ class GenomicIntervalSet(object):
 
         #This is done so that if a malformed BED record is detected, no intervals are loaded.
         records = []
-
+        
         intervalCount = max(enumerate(open(filename)))[0] + 1
         for _ in progress.bar(range(intervalCount)):
             line    = BEDfile.readline()
-            #NOTE! Assume that lines not starting with c are comments or track descriptions.
-            if line[0] == "c":
+            #Skip lines in the bed files which are UCSC track metadata or comments
+            if self.__isBEDHeader(line):
+                continue
+            else:
                 records.append(self.__parseBEDString(line))
 
         for i in records:
@@ -269,6 +271,22 @@ class GenomicIntervalSet(object):
         #TODO: Make a new exception class, something like malformedBEDException?
         exceptionString = "Malformed BED line: {0}".format(BEDString)
         raise Exception(exceptionString)
+
+    def __isBEDHeader(string):
+        """
+        Returns True/False whether a line in a bed file should be ignored according to
+        http://genome.ucsc.edu/goldenPath/help/customTrack.html#TRACK
+        """
+        if string[0] == "#":
+            return True
+            
+        headers = ["name","description","type","visibility","color","itemRgb","useScore","group",
+                   "priority","db","offset","maxItems","url","htmlUrl","bigDataUrl","track","browser"]
+                   
+        for each in headers:
+            if string.startswith(each):
+                return True
+        return False
 
     def __parseBEDString(self,BEDString):
         """
