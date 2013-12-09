@@ -1,2 +1,8 @@
-track name=exampleFile description="This is an example" useScore=1
+#This is a comment line and should be ignored.
+#The following lines should also be ignores as they are valid BED Headers
+browser position chr6:170863142-170863532
+browser hide all
+track name="ItemRGBDemo" description="Item RGB demonstration" visibility=2
+itemRgb="On"
+visibility=2 colorByStrand="255,0,0 0,0,255"
 chr6	170863142	170863532	0	0	+

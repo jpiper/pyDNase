@@ -16,7 +16,7 @@ except ImportError:
 
 setup(
     name='pyDNase',
-    version="0.1.1",
+    version="0.1.2",
     description='DNase-seq analysis library',
     long_description=open('README.rst',"rt").read(),
     author='Jason Piper',
@@ -29,15 +29,12 @@ setup(
         'pyDNase.footprinting',
     ],
 
-    #Uses a custom version of clint that has a time estimator on the progress bar
-    dependency_links = ["http://github.com/jpiper/clint/tarball/develop#egg=clint-0.3.0p"],
-
     install_requires=[
         "numpy",
         "scipy",
         "matplotlib",
         "pysam",
-        "clint==0.3.0p"
+        "clint"
     ],
     
     package_data = {'pyDNase':["data/*"]},

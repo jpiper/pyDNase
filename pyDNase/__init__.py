@@ -12,7 +12,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 
 import os
 import numpy as np
@@ -246,12 +246,12 @@ class GenomicIntervalSet(object):
 
         #This is done so that if a malformed BED record is detected, no intervals are loaded.
         records = []
-
+        
         intervalCount = max(enumerate(open(filename)))[0] + 1
         for _ in progress.bar(range(intervalCount)):
             line    = BEDfile.readline()
-            #NOTE! Assume that lines not starting with c are comments or track descriptions.
-            if line[0] == "c":
+            #Skip lines in the bed files which are UCSC track metadata or comments
+            if not self.__isBEDHeader(line):
                 records.append(self.__parseBEDString(line))
 
         for i in records:
@@ -269,6 +269,22 @@ class GenomicIntervalSet(object):
         #TODO: Make a new exception class, something like malformedBEDException?
         exceptionString = "Malformed BED line: {0}".format(BEDString)
         raise Exception(exceptionString)
+
+    def __isBEDHeader(self,string):
+        """
+        Returns True/False whether a line in a bed file should be ignored according to
+        http://genome.ucsc.edu/goldenPath/help/customTrack.html#TRACK
+        """
+        if string[0] == "#":
+            return True
+            
+        headers = ["name","description","type","visibility","color","itemRgb","useScore","group",
+                   "priority","db","offset","maxItems","url","htmlUrl","bigDataUrl","track","browser"]
+                   
+        for each in headers:
+            if string.startswith(each):
+                return True
+        return False
 
     def __parseBEDString(self,BEDString):
         """
@@ -292,9 +308,13 @@ class GenomicIntervalSet(object):
             self.__malformedBEDline(BEDString)
 
         #Default if only Chrom Start End is detected
-        chrom   = BEDSplit[0]
-        startbp = int(BEDSplit[1])
-        endbp   = int(BEDSplit[2])
+        try:
+            chrom   = BEDSplit[0]
+            startbp = int(BEDSplit[1])
+            endbp   = int(BEDSplit[2])
+        except:
+            self.__malformedBEDline(BEDString)
+
         label = 0
         score = 0
         strand = "+"
