@@ -12,7 +12,7 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 
 import os
 import numpy as np
@@ -270,7 +270,7 @@ class GenomicIntervalSet(object):
         exceptionString = "Malformed BED line: {0}".format(BEDString)
         raise Exception(exceptionString)
 
-    def __isBEDHeader(string):
+    def __isBEDHeader(self,string):
         """
         Returns True/False whether a line in a bed file should be ignored according to
         http://genome.ucsc.edu/goldenPath/help/customTrack.html#TRACK
@@ -308,9 +308,13 @@ class GenomicIntervalSet(object):
             self.__malformedBEDline(BEDString)
 
         #Default if only Chrom Start End is detected
-        chrom   = BEDSplit[0]
-        startbp = int(BEDSplit[1])
-        endbp   = int(BEDSplit[2])
+        try:
+            chrom   = BEDSplit[0]
+            startbp = int(BEDSplit[1])
+            endbp   = int(BEDSplit[2])
+        except:
+            self.__malformedBEDline(BEDString)
+
         label = 0
         score = 0
         strand = "+"
