@@ -20,7 +20,7 @@ from clint.textui import progress, puts
 import pyDNase
 
 parser = argparse.ArgumentParser(description='Writes two WIG files with the cut information based on the regions in reads BED file and the reads in reads BAM file')
-parser.add_argument("-r", "--real",action="store_true", help="Report cuts on the negative strand as positive numbers instead of negative (default: 100)",default=False)
+parser.add_argument("-r", "--real",action="store_true", help="Report cuts on the negative strand as positive numbers instead of negative (default: False)",default=False)
 parser.add_argument("regions", help="BED file of the regions you want to write wig tracks for")
 parser.add_argument("reads", help="The BAM file containing the read data")
 parser.add_argument("fw_output", help="Path to write the forward reads wig track to")
@@ -33,7 +33,7 @@ fwigout = open(args.fw_output,"w")
 bwigout = open(args.rev_output,"w")
 
 #Prints all the wig values but sorts by chromosome/genomic location first
-#TODO: port this most awesome (and hacky) code iteration code to the main API, possily using a generator expression?
+#TODO: port this most awesome (and hacky) code iteration code to the main API, possibly using a generator expression?
 puts("Writing wig tracks...")
 for each in progress.bar([item for sublist in sorted(regions.intervals.values()) for item in sorted(sublist, key=lambda peak: peak.startbp)]):
     cuts = reads[each]
@@ -48,3 +48,6 @@ for each in progress.bar([item for sublist in sorted(regions.intervals.values())
             print >> bwigout, i
         else:
             print >> bwigout, -i
+
+fwigout.close()
+bwigout.close()
