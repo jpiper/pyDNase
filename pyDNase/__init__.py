@@ -14,11 +14,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 __version__ = "0.1.2"
 
-import os
-import numpy as np
-import pysam
+import os, math, pysam
 from clint.textui import progress, puts_err
-
 
 def example_reads():
     """
@@ -94,14 +91,14 @@ class BAMHandler(object):
 
         """
         #Expand the region to the nearest CHUNK_SIZE and load these reads if they aren't in the cache
-        lbound = int(np.floor(startbp / float(self.CHUNK_SIZE)) * float(self.CHUNK_SIZE))
-        ubound = int(np.ceil(endbp / float(self.CHUNK_SIZE)) * float(self.CHUNK_SIZE))
+        lbound = int(math.floor(startbp / float(self.CHUNK_SIZE)) * float(self.CHUNK_SIZE))
+        ubound = int(math.ceil(endbp / float(self.CHUNK_SIZE)) * float(self.CHUNK_SIZE))
         for i in range(lbound,ubound,self.CHUNK_SIZE):
             if i not in self.lookupCache[chrom]:
                 self.__addCutsToCache(chrom,i,i+self.CHUNK_SIZE)
         #Fills in with zeroes where the hash table contains no information for each strand.
-        fwCutArray  = np.array([self.cutCache[chrom]["+"].get(i, 0) for i in range(startbp,endbp)])
-        revCutArray = np.array([self.cutCache[chrom]["-"].get(i, 0) for i in range(startbp,endbp)])
+        fwCutArray  = [self.cutCache[chrom]["+"].get(i, 0) for i in range(startbp,endbp)]
+        revCutArray = [self.cutCache[chrom]["-"].get(i, 0) for i in range(startbp,endbp)]
         return {"+":fwCutArray,"-":revCutArray}
 
     def __lookupReadsWithoutCache(self,startbp,endbp,chrom):
@@ -123,8 +120,8 @@ class BAMHandler(object):
                 a = int(alignedread.pos) - 1
                 if a >= startbp:
                     tempcutf[a] =tempcutf.get(a, 0) + 1
-        fwCutArray  = np.array([tempcutf.get(i, 0) for i in range(startbp,endbp)])
-        revCutArray = np.array([tempcutr.get(i, 0) for i in range(startbp,endbp)])
+        fwCutArray  = [tempcutf.get(i, 0) for i in range(startbp,endbp)]
+        revCutArray = [tempcutr.get(i, 0) for i in range(startbp,endbp)]
         return {"+":fwCutArray,"-":revCutArray}
 
     def __getitem__(self,vals):
