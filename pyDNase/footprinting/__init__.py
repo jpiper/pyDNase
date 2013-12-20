@@ -23,32 +23,86 @@ except ImportError:
             compiling the fastbinom extension.""")
 
 from itertools import tee
-import numpy.random
+import warnings, random
 import numpy as np
+from scipy import stats
 import pyDNase
-import warnings
+
 class wellington(object):
-    def __init__(self, interval, reads,
-                 shoulder_sizes=range(35,36), footprint_sizes = range(11,26,2), FDR=0, bonferroni = 0,):
-        self.interval = interval
-        #The footprint scores are calculated at instantiation.
-        self.scores, self.lengths   = self.calculate(reads, shoulder_sizes,footprint_sizes,FDR, bonferroni)
+
+    def __init__(self,interval,reads,shoulder_sizes=range(35,36), footprint_sizes = range(11,26,2),FDR_cutoff=0.01,FDR_iterations=100,**kwargs):
+
+        #Set up the model parameters
+        self.shoulder_sizes  = shoulder_sizes
+        self.footprint_sizes = footprint_sizes
+        self.FDR_iterations  = FDR_iterations
+        self.FDR_cutoff      = FDR_cutoff
+
+        self.interval        = interval
+        if self.interval.strand is "-":
+            warnings.warn("You're footprinting an interval on the reverse strand! "+
+                          "You should be sure you know what you're doing as wellington was not designed for this! "+
+                          "Ensure that all the intervals you provide to wellington are on the +ve strand for published behaviour",UserWarning)
+
+        #We don't store the read object anymore as it isn't pickleable due it being a file handle.
+        self.reads        = reads[self.interval]
+
+        #"None" indicates that these haven't been calculated yet.
+        self.storedscore   = None
+        self.storedlengths = None
+        self.FDR_Result    = None
+
+    #This is a pretty hacky way to allow this object to be called from a multithreaded standpoint.
+    #If you call the instanced object itself, it calculates the scores and the null scores, and returns
+    #the entire object.
+    def __call__(self):
+        self.storedscore, self.storedlengths   = self.calculate()
+        self.FDR_Result = self.FDRscore()
+        return self
+
+    #So I've made FDR_Value, lengths, and scores properties which are calculated ad hoc - they are no longer calculated
+    #at instantiation
+    @property
+    def FDR_value(self):
+        if self.FDR_Result != None:
+            return self.FDR_Result
+        else:
+            self.FDR_Result = self.FDRscore()
+            return self.FDR_Result
+    @property
+    def lengths(self):
+        if self.storedlengths != None: return self.storedlengths
+        else:
+            self.storedscore, self.storedlengths   = self.calculate()
+            return self.storedlengths
+    @property
+    def scores(self):
+        if self.storedlengths != None: return self.storedscore
+        else:
+            self.storedscore, self.storedlengths   = self.calculate()
+            return self.storedscore
+
+    def FDRscore(self):
+        return stats.scoreatpercentile([a for a in self.calculate(FDR=1)[0] for i in range(self.FDR_iterations)],int(self.FDR_cutoff*100))
+
     def footprints(self, withCutoff=-30, merge = 1):
         """
         This returns reads GenomicIntervalSet with the intervals retrieved below the specific cutoff applied to the selected data
         """
         #This find the positions of all the ranges below the cutoff using reads new method
         ranges = []
-        tempMLE, templogProb = np.copy(self.lengths), np.copy(self.scores)
-        while templogProb.min() < withCutoff:
+        tempMLE, templogProb = np.array(self.lengths), np.array(self.scores)
+        templogProbmin = templogProb.min()
+        while templogProbmin < withCutoff:
             minimapos = templogProb.argmin()
             minimafplen = tempMLE[minimapos]
             minimaphalffplen = int(minimafplen)/2
             lbound = max(minimapos-minimaphalffplen,0)
             rbound = min(minimapos+minimaphalffplen,len(templogProb))
-            ranges.append((lbound,rbound,templogProb.min()))
+            ranges.append((lbound,rbound,templogProbmin))
             templogProb[lbound:rbound] = 1
             tempMLE[lbound:rbound] = 1
+            templogProbmin = templogProb.min()
         returnSet = pyDNase.GenomicIntervalSet()
         #Merges overlapping ranges (TODO: documentation)
         if ranges:
@@ -84,26 +138,22 @@ class wellington(object):
                 next(each, None)
         return zip(*iters)
 
-    def calculate(self,reads,shoulder_sizes=range(35,36),footprint_sizes = range(11,26,2), FDR=0, bonferroni = 0):
+    def calculate(self,FDR=0):
         #TODO: write docstring and doctest
 
-        if self.interval.strand is "-":
-            warnings.warn("You're footprinting an interval on the reverse strand! "+
-                          "You should be sure you know what you're doing as wellington was not designed for this! "+
-                          "Ensure that all the intervals you provide to wellington are on the +ve strand for published behaviour",UserWarning)
-
-        cuts = reads[self.interval]
-        forwardArray, backwardArray     = cuts["+"].tolist(), cuts["-"].tolist()
+        #cuts = self.reads
+        forwardArray, backwardArray     = self.reads["+"], self.reads["-"]
 
         if FDR:
-            numpy.random.shuffle(forwardArray)
-            numpy.random.shuffle(backwardArray)
+            random.shuffle(forwardArray)
+            random.shuffle(backwardArray)
+        #print forwardArray
 
         #Let's compute all the possible binding arrays, this really helps when iterating over multiple footprint sizes
         fw_fpscores_dict = {}
         rv_fpscores_dict = {}
 
-        for fp_size in footprint_sizes:
+        for fp_size in self.footprint_sizes:
             halffpround = int((fp_size-1)/2)
             fw_fpscores_dict[fp_size] = [0] * halffpround + [sum(i) for i in self.window(forwardArray, fp_size)]
             rv_fpscores_dict[fp_size] = [0] * halffpround + [sum(i) for i in self.window(backwardArray,fp_size)]
@@ -111,16 +161,16 @@ class wellington(object):
        #Empty list of lists for storing the footprint scores
         log_probs       = [[] for i in range(len(forwardArray))]
 
-        if bonferroni:
-            bonferroni_factor = np.log(1.0/sum(reads.samfile.lengths))
+        #if self.bonferroni:
+        #    bonferroni_factor = np.log(1.0/sum(reads.samfile.lengths))
 
         #testing multiple background sizes
-        for shoulder_size in shoulder_sizes:
+        for shoulder_size in self.shoulder_sizes:
             #This computes the background cut sums for the specified shoulder_size for all basepairs
             f_bindingArray = [0] * (shoulder_size - 1) + [sum(i) for i in self.window(forwardArray,shoulder_size)]
             b_bindingArray = [sum(i) for i in self.window(backwardArray,shoulder_size)] + [0] * (shoulder_size - 1)
 
-            for fp_size in footprint_sizes:
+            for fp_size in self.footprint_sizes:
                 halffpround = int((fp_size-1)/2)
                 #This computes the binding cut sums for the specified fp_size for all basepairs
                 fw_fpscores = fw_fpscores_dict[fp_size]
@@ -147,39 +197,38 @@ class wellington(object):
                 best_params =  min(log_probs[i])
                 #This catches anything which has floated to negative infinity - but it might not be the best way
                 best_score = max(-1000,best_params[0])
-                if bonferroni:
-                    best_probabilities.append(min(0,best_score - bonferroni_factor))
-                else:
-                    best_probabilities.append(best_score)
+                #if bonferroni:
+                #    best_probabilities.append(min(0,best_score - bonferroni_factor))
+                #else:
+                best_probabilities.append(best_score)
                 best_footprintsizes.append(best_params[1])
             else:
                 best_probabilities.append(0)
                 best_footprintsizes.append(0)
-        return (np.array(best_probabilities), np.array(best_footprintsizes))
+        return best_probabilities, best_footprintsizes
 
 
 class wellington1D(wellington):
-    def calculate(self,reads,shoulder_sizes=range(35,36),footprint_sizes = range(11,26,2), FDR=0, bonferroni = 0):
+    def calculate(self,FDR=0):
         #TODO: write docstring and doctest
 
         #Here we use some precomputed sums to avoid multiple calculations
-        cuts = reads[self.interval]
-        forwardArray, backwardArray     = cuts["+"], cuts["-"]
-        cutArray     = (forwardArray + backwardArray).tolist()
+        forwardArray, backwardArray     = self.reads["+"], self.reads["-"]
+        cutArray     = np.add(forwardArray, backwardArray).tolist()
         if FDR:
-            numpy.random.shuffle(cutArray)
+            random.shuffle(cutArray)
 
         #Empty list of lists for storing the footprint scores
         log_probs       = [[] for i in range(len(cutArray))]
+        #
+        #if bonferroni:
+        #    bonferroni_factor = np.log(1/float(sum(reads.samfile.lengths)))
 
-        if bonferroni:
-            bonferroni_factor = np.log(1/float(sum(reads.samfile.lengths)))
-
-        for shoulder_size in shoulder_sizes:
+        for shoulder_size in self.shoulder_sizes:
             #This computes the background cut  sums for the specified shoulder_size for all basepairs
             f_bindingArray = [0] * (shoulder_size - 1) + [sum(i) for i in self.window(cutArray,shoulder_size)]
             b_bindingArray = [sum(i) for i in self.window(cutArray,shoulder_size)] + [0] * (shoulder_size - 1)
-            for fp_size in footprint_sizes:
+            for fp_size in self.footprint_sizes:
                 halffpround = int((fp_size-1)/2)
                 #This computes the binding cut sums for the specified fp_size for all basepairs
                 fpscores = [0] * halffpround + [sum(i) for i in self.window(cutArray, fp_size)]
@@ -202,12 +251,12 @@ class wellington1D(wellington):
                 best_params =  min(log_probs[i])
                 #This catches anything which has floated to negative infinity - but it might not be the best way
                 best_score = max(-1000,best_params[0])
-                if bonferroni:
-                    best_probabilities.append(min(0,best_score - bonferroni_factor))
-                else:
-                    best_probabilities.append(best_score)
+                #if bonferroni:
+                #    best_probabilities.append(min(0,best_score - bonferroni_factor))
+                #else:
+                best_probabilities.append(best_score)
                 best_footprintsizes.append(best_params[1])
             else:
                 best_probabilities.append(0)
                 best_footprintsizes.append(0)
-        return (np.array(best_probabilities), np.array(best_footprintsizes))
+        return best_probabilities, best_footprintsizes
