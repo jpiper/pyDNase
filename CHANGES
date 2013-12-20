@@ -1,14 +1,21 @@
+0.2.0 - XXXX-XX-XX
+==================
+ENHANCEMENT: In the interests of performance, `BAMHandler` no longer returns NumPy arrays, just lists.
+ENHANCEMENT: `wellington_footprints.py` is now multithreaded - performance roughly scales linearly with CPU number
+ENHANCEMENT: The `Footprinting` module has been refactored to allow for multithreading - those using the Wellington API directly take note of the changes
+TODO: Fix bonferroni correction in wellington_footprints.py
+
 0.1.2 - 2013-12-09
 ==================
-Fix issue where BED intervals with chromosome names not starting with "c" were silently being ignored (reported by Aaron Hardin)
-Fix clint dependency issue (no longer requires custom version of clint)
-Fix spelling error in CHANGES
+BUG: Fix issue where BED intervals with chromosome names not starting with "c" were silently being ignored (reported by Aaron Hardin)
+BUG: Fix clint dependency issue (no longer requires custom version of clint)
+BUG: Fix spelling error in CHANGES
 
 0.1.1 - 2013-12-05
 ==================
-Misc. small bug fixes
-Fixed Python 2.6 Compatibility
-Added JSON export script
+BUG: Misc. small bug fixes
+ENHANCEMENT: Fixed Python 2.6 Compatibility
+ENHANCEMENT: Added JSON export script
 
 0.1.0 - 2013-09-01
 ==================
