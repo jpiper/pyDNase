@@ -66,7 +66,7 @@ assert 0 < clargs.FDR_cutoff < 1, "FDR must be between 0 and 1"
 assert clargs.FDR_limit < 0, "FDR limit must be less than 0"
 
 #Checks that the directories are empty (ignores hidden files/folders)
-assert len([f for f in os.listdir(clargs.outputdir) if f[0] != "."]) == 0, "output directory {} is not empty!".format(clargs.outputdir)
+assert len([f for f in os.listdir(clargs.outputdir) if f[0] != "."]) == 0, "output directory {0} is not empty!".format(clargs.outputdir)
 
 if not clargs.output_prefix:
     clargs.output_prefix = str(os.path.basename(clargs.reads)) + "." + str(os.path.basename(clargs.regions))
@@ -78,7 +78,7 @@ reads = pyDNase.BAMHandler(clargs.reads,caching=False)
 #Create a directory for p-values and WIG output. This /should/ be OS independent
 os.makedirs(os.path.join(clargs.outputdir,"p value cutoffs"))
 wigout = open(os.path.relpath(clargs.outputdir) + "/" + clargs.output_prefix + ".WellingtonFootprints.wig","w")
-fdrout = open(os.path.relpath(clargs.outputdir) + "/" + clargs.output_prefix + ".WellingtonFootprints.FDR.{}.bed".format(clargs.FDR_cutoff),"w")
+fdrout = open(os.path.relpath(clargs.outputdir) + "/" + clargs.output_prefix + ".WellingtonFootprints.FDR.{0}.bed".format(clargs.FDR_cutoff),"w")
 
 #Iterate in chromosome, basepair order
 orderedbychr = [item for sublist in sorted(regions.intervals.values()) for item in sorted(sublist, key=lambda peak: peak.startbp)]
@@ -103,7 +103,7 @@ def writetodisk(fp):
              print >> fdrout, footprint
     #p-value cutoff footprints
     for fpscore in clargs.pv_cutoffs:
-        ofile = open(os.path.relpath(os.path.join(clargs.outputdir,"p value cutoffs")) + "/" + clargs.output_prefix + ".WellingtonFootprints.{}.bed".format(fpscore),"a")
+        ofile = open(os.path.relpath(os.path.join(clargs.outputdir,"p value cutoffs")) + "/" + clargs.output_prefix + ".WellingtonFootprints.{0}.bed".format(fpscore),"a")
         for footprint in fp.footprints(withCutoff=fpscore):
             print >> ofile, footprint
         ofile.close()
@@ -120,7 +120,7 @@ def multiWellington(regions,reads,**args):
         while p._taskqueue.qsize() > max_regions_cached_in_memory:
             pass
     p.close()
-    puts_err("Waiting for the last {} jobs to finish".format(max_regions_cached_in_memory))
+    puts_err("Waiting for the last {0} jobs to finish".format(max_regions_cached_in_memory))
     p.join()
 
 #TODO: Use **args or something similar to pass arguments?
