@@ -65,7 +65,7 @@ assert 0 < args.FDR_cutoff < 1, "FDR must be between 0 and 1"
 assert args.FDR_limit < 0, "FDR limit must be less than 0"
 
 #Checks that the directories are empty (ignores hidden files/folders)
-assert len([f for f in os.listdir(args.outputdir) if f[0] != "."]) == 0, "output directory {} is not empty!".format(args.outputdir)
+assert len([f for f in os.listdir(args.outputdir) if f[0] != "."]) == 0, "output directory {0} is not empty!".format(args.outputdir)
 
 if not args.output_prefix:
     args.output_prefix = str(os.path.basename(args.reads)) + "." + str(os.path.basename(args.regions))
@@ -77,7 +77,7 @@ reads = pyDNase.BAMHandler(args.reads,caching=False)
 #Create a directory for p-values and WIG output. This /should/ be OS independent
 os.makedirs(os.path.join(args.outputdir,"p value cutoffs"))
 wigout = open(os.path.relpath(args.outputdir) + "/" + args.output_prefix + ".WellingtonFootprints.wig","w")
-fdrout = open(os.path.relpath(args.outputdir) + "/" + args.output_prefix + ".WellingtonFootprints.FDR.{}.bed".format(args.FDR_cutoff),"w")
+fdrout = open(os.path.relpath(args.outputdir) + "/" + args.output_prefix + ".WellingtonFootprints.FDR.{0}.bed".format(args.FDR_cutoff),"w")
 
 #Iterate in chromosome, basepair order
 orderedbychr = [item for sublist in sorted(regions.intervals.values()) for item in sorted(sublist, key=lambda peak: peak.startbp)]
@@ -103,7 +103,7 @@ for each in progress.bar(orderedbychr):
 
     #p-value cutoff footprints
     for fpscore in args.pv_cutoffs:
-        ofile = open(os.path.relpath(os.path.join(args.outputdir,"p value cutoffs")) + "/" + args.output_prefix + ".WellingtonFootprints.{}.bed".format(fpscore),"a")
+        ofile = open(os.path.relpath(os.path.join(args.outputdir,"p value cutoffs")) + "/" + args.output_prefix + ".WellingtonFootprints.{0}.bed".format(fpscore),"a")
         for footprint in fp.footprints(withCutoff=fpscore):
             print >> ofile, footprint
         ofile.close()

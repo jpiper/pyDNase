@@ -16,7 +16,7 @@ except ImportError:
 
 setup(
     name='pyDNase',
-    version="0.1.2",
+    version="0.1.3",
     description='DNase-seq analysis library',
     long_description=open('README.rst',"rt").read(),
     author='Jason Piper',
