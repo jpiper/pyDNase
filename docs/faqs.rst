@@ -14,3 +14,7 @@ To identify DNase I hypersensitive sites in DNase-seq data, we recommend using  
     $ bedtools sort -i <input.bed> | bedtools merge -i > <output.bed>
 
 We find the results are almost exactly the same as the `HOTSPOT <http://www.uwencode.org/proj/hotspot/>`_ method employed by ENCODE. See the `HOMER <http://biowhat.ucsd.edu/homer/index.html>`_ documentation for detailed information on how to carry out this procedure.
+
+pyDNase won't install/import or gives weird errors
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The most common issue here is that you have old versions of the dependencies - namely ``scipy``, ``numpy``, or ``pysam`` installed - try updating these to their latest version.
