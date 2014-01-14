@@ -12,11 +12,12 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-__version__ = "0.1.2"
 
 import os, math, pysam
 from clint.textui import progress, puts_err
-
+import sqlite3 as lite
+import tempfile
+import warnings
 def example_reads():
     """
     returns the path to the example BAM file
@@ -473,3 +474,33 @@ class GenomicInterval(object):
         Returns the length of the GenomicInterval in basepairs
         """
         return self.endbp - self.startbp
+
+class FASTAHandler(object):
+    def __init__(self,fasta_file ="/Users/jasonlozier/Genomics/hg19-bt2.fa",vcf_file = None):
+        self.ffile = pysam.Fastafile(fasta_file)
+        self.conn = None
+        if vcf_file:
+            self.conn = lite.connect(tempfile.NamedTemporaryFile().name)
+            with open(vcf_file, 'r') as f:
+                records = [(x[0],x[1],x[3],x[4]) for x in (x.split() for x in f if x[0] != "#")]
+                with self.conn:
+                    cur = self.conn.cursor()
+                    cur.execute("CREATE TABLE SNPS(chr TEXT,pos INT, ref TEXT, mut TEXT)")
+                    cur.executemany("INSERT INTO SNPS VALUES(?,?,?,?)",records)
+                #Manually remove these, as they potentially could be large in memory
+                del(records)
+    def sequence(self,interval):
+        sequence_string = self.ffile.fetch(interval.chromosome,interval.startbp,interval.endbp).upper()
+        if not self.conn:
+            return str(sequence_string)
+        else:
+            query_string = "SELECT chr, pos - ? - 1 as offset,ref,mut FROM SNPS WHERE chr=? and pos BETWEEN ? and ?"
+            snps = self.conn.cursor().execute(query_string,(interval.startbp,interval.chromosome,interval.startbp,interval.endbp)).fetchall()
+            sequence_list = [i for i in sequence_string]
+            for i in snps:
+                if sequence_list[i[1]] != i[2]:
+                    warnings.warn("MISMATCH IN REF TO SNP - WHAT HAVE YOU DONE?")
+                else:
+                    #str needed as sqlite returns unicode
+                    sequence_list[i[1]] = str(i[3])
+            return "".join(sequence_list)
