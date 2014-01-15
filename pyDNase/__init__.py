@@ -12,12 +12,13 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+__version__ = "0.2.0"
 
 import os, math, pysam
 from clint.textui import progress, puts_err
 import sqlite3 as lite
-import tempfile
-import warnings
+import tempfile, warnings, pickle
+
 def example_reads():
     """
     returns the path to the example BAM file
@@ -125,7 +126,7 @@ class BAMHandler(object):
         revCutArray = [tempcutr.get(i, 0) for i in range(startbp,endbp)]
         return {"+":fwCutArray,"-":revCutArray}
 
-    def __getitem__(self,vals):
+    def __get_cut_values(self,vals):
         """Return a dictionary with the cut counts. Can be used in two different ways:
 
         You can either use a string or a GenomicInterval to query for cuts.
@@ -166,6 +167,12 @@ class BAMHandler(object):
         if flip is "-":
             retval["+"], retval["-"] = retval["-"][::-1], retval["+"][::-1]
         return retval
+
+    def __getitem__(self,vals):
+        """
+        Wrapper for __get_cut_values
+        """
+        return self.__get_cut_values(vals)
 
     def FOS(self,interval,bgsize=35):
         """Calculates the Footprint Occupancy Score (FOS) for a Genomicinterval. See Neph et al. 2012 (Nature) for full details.
@@ -476,6 +483,7 @@ class GenomicInterval(object):
         return self.endbp - self.startbp
 
 class FASTAHandler(object):
+    #TODO: Change this so it doesn't automatically use my builtin hg19
     def __init__(self,fasta_file ="/Users/jasonlozier/Genomics/hg19-bt2.fa",vcf_file = None):
         self.ffile = pysam.Fastafile(fasta_file)
         self.conn = None
