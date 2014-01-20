@@ -126,7 +126,7 @@ class BAMHandler(object):
         revCutArray = [tempcutr.get(i, 0) for i in range(startbp,endbp)]
         return {"+":fwCutArray,"-":revCutArray}
 
-    def __get_cut_values(self,vals):
+    def get_cut_values(self,vals):
         """Return a dictionary with the cut counts. Can be used in two different ways:
 
         You can either use a string or a GenomicInterval to query for cuts.
@@ -170,9 +170,9 @@ class BAMHandler(object):
 
     def __getitem__(self,vals):
         """
-        Wrapper for __get_cut_values
+        Wrapper for get_cut_values
         """
-        return self.__get_cut_values(vals)
+        return self.get_cut_values(vals)
 
     def FOS(self,interval,bgsize=35):
         """Calculates the Footprint Occupancy Score (FOS) for a Genomicinterval. See Neph et al. 2012 (Nature) for full details.
@@ -191,9 +191,9 @@ class BAMHandler(object):
         forwardArray, backwardArray     = cuts["+"], cuts["-"]
         cutArray     = (forwardArray + backwardArray)
 
-        leftReads   = float(cutArray[:bgsize].sum())
-        centreReads = float(cutArray[bgsize:-bgsize].sum())
-        rightReads  = float(cutArray[-bgsize:].sum())
+        leftReads   = float(sum(cutArray[:bgsize]))
+        centreReads = float(sum(cutArray[bgsize:-bgsize]))
+        rightReads  = float(sum(cutArray[-bgsize:]))
 
         try:
             return ( (centreReads+1) / leftReads ) + ( (centreReads+1)/rightReads)
@@ -512,3 +512,72 @@ class FASTAHandler(object):
                     #str needed as sqlite returns unicode
                     sequence_list[i[1]] = str(i[3])
             return "".join(sequence_list)
+
+class BiasCalculator(object):
+    def __init__(self,bias_file=None):
+        if bias_file is None:
+            #Load the genomic IMR90 bias from Shirley
+            bias_file = open(os.path.join(os.path.join(os.path.dirname(__file__), "data"),"IMR90_6mer.pickle"))
+        self.biasdict = pickle.load(bias_file)
+    def bias(self,sequence):
+        """
+        NOTE:   Because bias is calculated from  the centre of a 6-mer,
+                the data will be missing the values for the first and last 3 bases
+        """
+        #Split sequence into consituent 6-mers
+        sequence_chunks = [sequence[i:i+6] for i in range(len(sequence)-5)]
+        #Look up values of these 6-mers in the precomputed bias database
+        fw_bias =  [float(self.biasdict[i]["forward"])for i in sequence_chunks]
+        rv_bias =  [float(self.biasdict[i]["reverse"])for i in sequence_chunks]
+        #FIXME: Pickled data should use "+" and "-" and not forward and reverse to prevent confusion here
+        return {"+": fw_bias, "-":rv_bias}
+
+class BAMHandlerWithBias(BAMHandler):
+    def __init__(self, sequence_object, bias_object, *args, **kwargs):
+        super(BAMHandlerWithBias, self).__init__(*args, **kwargs)
+        self.sequence_data = sequence_object
+        self.bias_data     = bias_object
+
+    def __getitem__(self,interval):
+        if not isinstance(interval,GenomicInterval):
+            raise TypeError("Sorry, but we only support GenomicInterval querying for the Bias Handler at the moment")
+        #Note: This is pretty Hacky!
+        interval.startbp -= 3
+        interval.endbp   += 3
+        #Get the sequence data
+        sequence = self.sequence_data.sequence(interval)
+        #print sequence
+        interval.startbp += 3
+        interval.endbp   -= 3
+        bias_values = self.bias_data.bias(sequence)
+        bias_values["+"] = bias_values["+"][:-1]
+        bias_values["-"] = bias_values["-"][1:]
+        cuts = self.get_cut_values(interval)
+        #print cuts
+        #These are N_i^s - note we are using an entire hypersensitive site, and not 50bp
+        N_i = {"+":sum(cuts["+"]) ,"-":sum(cuts["-"])}
+
+        #bias_values are y_i in the nat methods paper
+        for dir in ("-","+"):
+            bias_values[dir] = [float(i)/sum(bias_values[dir]) for i in bias_values[dir]]
+        #Stupid pass-by-reference.
+        predicted_cuts = {"+":cuts["+"][:],"-":cuts["-"][:]}
+
+        #Now we need to calculate the predicted counts (nhat_i, which is N_i * y_i)
+
+        for dir in ("-","+"):
+            #For each base
+            for num, val in enumerate(predicted_cuts[dir]):
+                #Multiply the total number of observed cuts by the bias value
+                predicted_cuts[dir][num] = bias_values[dir][num] * N_i[dir]
+
+        #The predicted counts here are literally how we would expect the enzyme to cut in this naked regions
+        #return predicted_cuts
+
+        for dir in ("-","+"):
+            #For each base
+            for num, val in enumerate(predicted_cuts[dir]):
+                #Divide the number of observed cuts by the bias value
+                predicted_cuts[dir][num] = (cuts[dir][num] + 1.0)  / (val + 1.0)
+                
+        return predicted_cuts
