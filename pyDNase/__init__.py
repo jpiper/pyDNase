@@ -530,13 +530,14 @@ class BiasCalculator(object):
         fw_bias =  [float(self.biasdict[i]["forward"])for i in sequence_chunks]
         rv_bias =  [float(self.biasdict[i]["reverse"])for i in sequence_chunks]
         #FIXME: Pickled data should use "+" and "-" and not forward and reverse to prevent confusion here
+        #FIXME: Fix the pickled data - the reverse positions are off by one!
         return {"+": fw_bias, "-":rv_bias}
 
 class BAMHandlerWithBias(BAMHandler):
-    def __init__(self, sequence_object, bias_object, *args, **kwargs):
+    def __init__(self, sequence_object, *args, **kwargs):
         super(BAMHandlerWithBias, self).__init__(*args, **kwargs)
         self.sequence_data = sequence_object
-        self.bias_data     = bias_object
+        self.bias_data     = BiasCalculator()
 
     def __getitem__(self,interval):
         if not isinstance(interval,GenomicInterval):
@@ -545,39 +546,35 @@ class BAMHandlerWithBias(BAMHandler):
         interval.startbp -= 3
         interval.endbp   += 3
         #Get the sequence data
-        sequence = self.sequence_data.sequence(interval)
-        #print sequence
+        bias_values = self.bias_data.bias(self.sequence_data.sequence(interval))
         interval.startbp += 3
         interval.endbp   -= 3
-        bias_values = self.bias_data.bias(sequence)
         bias_values["+"] = bias_values["+"][:-1]
         bias_values["-"] = bias_values["-"][1:]
         cuts = self.get_cut_values(interval)
-        #print cuts
-        #These are N_i^s - note we are using an entire hypersensitive site, and not 50bp
+
+        #Nomenclature used below is that in the He. et al Nature Methods Paper
+        #These are N_i^s - note we are using an entire hypersensitive site, and not 50bp like the paper
         N_i = {"+":sum(cuts["+"]) ,"-":sum(cuts["-"])}
 
-        #bias_values are y_i in the nat methods paper
+        #bias_values are y_i
         for dir in ("-","+"):
             bias_values[dir] = [float(i)/sum(bias_values[dir]) for i in bias_values[dir]]
-        #Stupid pass-by-reference.
+
+        #Stupid pass-by-reference
         predicted_cuts = {"+":cuts["+"][:],"-":cuts["-"][:]}
-
-        #Now we need to calculate the predicted counts (nhat_i, which is N_i * y_i)
-
+        #Calculate the predicted counts (nhat_i, which is N_i * y_i) based on n-mer cutting preference
         for dir in ("-","+"):
             #For each base
             for num, val in enumerate(predicted_cuts[dir]):
                 #Multiply the total number of observed cuts by the bias value
                 predicted_cuts[dir][num] = bias_values[dir][num] * N_i[dir]
 
-        #The predicted counts here are literally how we would expect the enzyme to cut in this naked regions
-        #return predicted_cuts
-
+        #Now we normalised the observed cuts by the expected
         for dir in ("-","+"):
             #For each base
             for num, val in enumerate(predicted_cuts[dir]):
                 #Divide the number of observed cuts by the bias value
                 predicted_cuts[dir][num] = (cuts[dir][num] + 1.0)  / (val + 1.0)
-                
+
         return predicted_cuts
