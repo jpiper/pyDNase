@@ -176,7 +176,7 @@ class BAMHandler(object):
             interval (GenomicInterval): The interval that you want the FOS for
 
         Kwargs:
-            bgsize (int): The size of the flanking region to use when calcuating the FOS (default: 35)
+            bgsize (int): The size of the flanking region to use when calculating the FOS (default: 35)
 
         Returns:
             A float with the FOS - returns 10000 if it can't calculate it
@@ -186,9 +186,9 @@ class BAMHandler(object):
         forwardArray, backwardArray     = cuts["+"], cuts["-"]
         cutArray     = (forwardArray + backwardArray)
 
-        leftReads   = float(cutArray[:bgsize].sum())
-        centreReads = float(cutArray[bgsize:-bgsize].sum())
-        rightReads  = float(cutArray[-bgsize:].sum())
+        leftReads   = float(sum(cutArray[:bgsize]))
+        centreReads = float(sum(cutArray[bgsize:-bgsize]))
+        rightReads  = float(sum(cutArray[-bgsize:]))
 
         try:
             return ( (centreReads+1) / leftReads ) + ( (centreReads+1)/rightReads)
