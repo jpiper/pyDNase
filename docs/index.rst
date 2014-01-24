@@ -24,19 +24,7 @@ Contents
 .. *Scripts
 .. *FAQS
 .. *pyDNase Reference
-.. 
-.. 
-.. 
-.. Indices and tables
-.. ==================
-.. 
-.. * :ref:`genindex`
-.. * :ref:`search`
-.. 
-.. 
-.. Indices and tables23
-.. ====================
-.. 
-.. .. automodule:: pyDNase
-..    :members:
-..    :special-members:
+
+Changelog
+--------
+.. include:: ../CHANGES

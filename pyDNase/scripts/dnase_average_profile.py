@@ -41,7 +41,7 @@ if args.i:
     for each in regions:
         each.strand = "+"
 
-puts("Resizing Regions to {}".format(args.window_size))
+puts("Resizing Regions to {0}".format(args.window_size))
 regions.resizeRegions(args.window_size)
 
 fw = []

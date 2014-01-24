@@ -181,7 +181,7 @@ class BAMHandler(object):
             interval (GenomicInterval): The interval that you want the FOS for
 
         Kwargs:
-            bgsize (int): The size of the flanking region to use when calculating the FOS (default: 35)
+            bgsize (int): The size of the flanking region to use when calcuating the FOS (default: 35)
 
         Returns:
             A float with the FOS - returns 10000 if it can't calculate it

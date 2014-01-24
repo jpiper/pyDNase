@@ -54,7 +54,7 @@ else:
     for i in progress.bar(regions):
         i.score = reads.FOS(i)
 
-puts("Resizing Regions to {}".format(args.window_size))
+puts("Resizing Regions to {0}".format(args.window_size))
 regions.resizeRegions(toSize=args.window_size)
 
 outfile = csv.writer(open(args.output,"w"),delimiter="\t")
