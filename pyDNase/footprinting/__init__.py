@@ -30,13 +30,18 @@ import pyDNase
 
 class wellington(object):
 
-    def __init__(self,interval,reads,shoulder_sizes=range(35,36), footprint_sizes = range(11,26,2),FDR_cutoff=0.01,FDR_iterations=100,**kwargs):
+    def __init__(self,interval,reads,shoulder_sizes=range(35,36), footprint_sizes = range(11,26,2),FDR_cutoff=0.01,FDR_iterations=100,bonferroni=None,**kwargs):
 
         #Set up the model parameters
         self.shoulder_sizes  = shoulder_sizes
         self.footprint_sizes = footprint_sizes
         self.FDR_iterations  = FDR_iterations
         self.FDR_cutoff      = FDR_cutoff
+        if bonferroni:
+            self.bonferroni_factor = np.log(1.0/sum(reads.samfile.lengths))
+        else:
+            self.bonferroni_factor = None
+
 
         self.interval        = interval
         if self.interval.strand is "-":
@@ -161,8 +166,6 @@ class wellington(object):
        #Empty list of lists for storing the footprint scores
         log_probs       = [[] for i in range(len(forwardArray))]
 
-        #if self.bonferroni:
-        #    bonferroni_factor = np.log(1.0/sum(reads.samfile.lengths))
 
         #testing multiple background sizes
         for shoulder_size in self.shoulder_sizes:
@@ -197,11 +200,11 @@ class wellington(object):
                 best_params =  min(log_probs[i])
                 #This catches anything which has floated to negative infinity - but it might not be the best way
                 best_score = max(-1000,best_params[0])
-                #if bonferroni:
-                #    best_probabilities.append(min(0,best_score - bonferroni_factor))
-                #else:
-                best_probabilities.append(best_score)
-                best_footprintsizes.append(best_params[1])
+                if self.bonferroni_factor:
+                    best_probabilities.append(min(0,best_score - self.bonferroni_factor))
+                else:
+                    best_probabilities.append(best_score)
+                    best_footprintsizes.append(best_params[1])
             else:
                 best_probabilities.append(0)
                 best_footprintsizes.append(0)
@@ -221,8 +224,6 @@ class wellington1D(wellington):
         #Empty list of lists for storing the footprint scores
         log_probs       = [[] for i in range(len(cutArray))]
         #
-        #if bonferroni:
-        #    bonferroni_factor = np.log(1/float(sum(reads.samfile.lengths)))
 
         for shoulder_size in self.shoulder_sizes:
             #This computes the background cut  sums for the specified shoulder_size for all basepairs
@@ -251,11 +252,11 @@ class wellington1D(wellington):
                 best_params =  min(log_probs[i])
                 #This catches anything which has floated to negative infinity - but it might not be the best way
                 best_score = max(-1000,best_params[0])
-                #if bonferroni:
-                #    best_probabilities.append(min(0,best_score - bonferroni_factor))
-                #else:
-                best_probabilities.append(best_score)
-                best_footprintsizes.append(best_params[1])
+                if self.bonferroni_factor:
+                    best_probabilities.append(min(0,best_score - self.bonferroni_factor))
+                else:
+                    best_probabilities.append(best_score)
+                    best_footprintsizes.append(best_params[1])
             else:
                 best_probabilities.append(0)
                 best_footprintsizes.append(0)
