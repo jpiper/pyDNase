@@ -31,7 +31,7 @@ parser.add_argument("-d", "--one_dimension",action="store_true", help="Use Welli
 parser.add_argument("-fdr","--FDR_cutoff", help="Write footprints using the FDR selection method at a specific FDR (default: 0.01)",default=0.01,type=float)
 parser.add_argument("-fdriter", "--FDR_iterations", help="How many randomisations to use when performing FDR calculations (default: 100)",default=100,type=int)
 parser.add_argument("-fdrlimit", "--FDR_limit", help="Minimum p-value to be considered significant for FDR calculation (default: -20)",default=-20,type=int)
-parser.add_argument("-pv","--pv_cutoffs", help="Select footprints using a range of pvalue cutoffs (default: -10,-20,-30,-40,-50,-75,-100,-300,-500,-700",default="-10,-20,-30,-40,-50,-75,-100,-300,-500,-700",type=str) #map(int,"1,2,3".split(","))
+parser.add_argument("-pv","--pv_cutoffs", help="Select footprints using a range of pvalue cutoffs (default: -10,-20,-30,-40,-50,-75,-100,-300,-500,-700",default="-10,-20,-30,-40,-50,-75,-100,-300,-500,-700",type=str)
 parser.add_argument("-dm","--dont-merge-footprints",action="store_true", help="Disables merging of overlapping footprints (Default: False)",default=False)
 parser.add_argument("-o","--output_prefix", help="The prefix for results files (default: <reads.regions>)",default="",type=str)
 parser.add_argument("-p", help="Number of processes to use (default: uses all CPUs)",default=0,type=int)

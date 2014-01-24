@@ -13,10 +13,10 @@ We have developed `pyDNase` to interface with a sorted and indexed BAM file from
     >>> import pyDNase
     >>> reads = pyDNase.BAMHandler(pyDNase.example_reads())
     >>> reads["chr6,170863500,170863532,+"]
-    {'+': array([0,0,0,1,0,0,1,1,2,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,1,1,0,0,0,1]),
-     '-': array([0,10,1,0,1,0,4,9,0,1,0,2,1,0,0,0,0,0,3,0,6,3,0,0,0,1,1,1,3,0,3,6])}
+    {'+': [0,0,0,1,0,0,1,1,2,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,1,1,0,0,0,1],
+     '-': [0,10,1,0,1,0,4,9,0,1,0,2,1,0,0,0,0,0,3,0,6,3,0,0,0,1,1,1,3,0,3,6]}
 
-Querying the ``BAMHandler`` object returns a dictionary containing numpy arrays with DNase cut counts on the positive reference strand (+), and cuts on the negative reference strand (-). `pyDNase` efficiently caches the cut data queried, so that multiple requests from the same genomic locations do not require repeated lookups from the BAM file (this can be disabled).
+Querying the ``BAMHandler`` object returns a dictionary containing lists with DNase cut counts on the positive reference strand (+), and cuts on the negative reference strand (-). `pyDNase` efficiently caches the cut data queried, so that multiple requests from the same genomic locations do not require repeated lookups from the BAM file (this can be disabled).
 
 `pyDNase` comes with several analysis scripts covering several common use cases of DNase-seq analysis, and also an implementation of the Wellington and Wellington 1D footprinting algorithms.
 
