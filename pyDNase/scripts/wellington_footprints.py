@@ -29,8 +29,8 @@ parser.add_argument("-sh", "--shoulder-sizes", help="Range of shoulder sizes to 
 parser.add_argument("-fp", "--footprint-sizes", help="Range of footprint sizes to try in format \"from,to,step\" (default: 11,26,2)",default="11,26,2",type=str)
 parser.add_argument("-d", "--one_dimension",action="store_true", help="Use Wellington 1D instead of Wellington (default: False)",default=False)
 parser.add_argument("-fdr","--FDR_cutoff", help="Write footprints using the FDR selection method at a specific FDR (default: 0.01)",default=0.01,type=float)
-parser.add_argument("-fdriter", "--FDR-iterations", help="How many randomisations to use when performing FDR calculations (default: 100)",default=100,type=int)
-parser.add_argument("-fdrlimit", "--FDR-limit", help="Minimum p-value to be considered significant for FDR calculation (default: -20)",default=-20,type=int)
+parser.add_argument("-fdriter", "--FDR_iterations", help="How many randomisations to use when performing FDR calculations (default: 100)",default=100,type=int)
+parser.add_argument("-fdrlimit", "--FDR_limit", help="Minimum p-value to be considered significant for FDR calculation (default: -20)",default=-20,type=int)
 parser.add_argument("-pv","--pv_cutoffs", help="Select footprints using a range of pvalue cutoffs (default: -10,-20,-30,-40,-50,-75,-100,-300,-500,-700",default="-10,-20,-30,-40,-50,-75,-100,-300,-500,-700",type=str) #map(int,"1,2,3".split(","))
 parser.add_argument("-dm","--dont-merge-footprints",action="store_true", help="Disables merging of overlapping footprints (Default: False)",default=False)
 parser.add_argument("-o","--output_prefix", help="The prefix for results files (default: <reads.regions>)",default="",type=str)
@@ -64,8 +64,6 @@ except:
 
 assert 0 < clargs.FDR_cutoff < 1, "FDR must be between 0 and 1"
 assert clargs.FDR_limit < 0, "FDR limit must be less than 0"
-
-#Checks that the directories are empty (ignores hidden files/folders)
 assert len([f for f in os.listdir(clargs.outputdir) if f[0] != "."]) == 0, "output directory {0} is not empty!".format(clargs.outputdir)
 
 if not clargs.output_prefix:
@@ -108,13 +106,13 @@ def writetodisk(fp):
             print >> ofile, footprint
         ofile.close()
 
-def multiWellington(regions,reads,**args):
+def multiWellington(regions,reads,**kwargs):
     p = mp.Pool(CPUs)
     for i in progress.bar(regions):
         if clargs.one_dimension:
-            fp = footprinting.wellington1D(i,reads,**args)
+            fp = footprinting.wellington1D(i,reads,**kwargs)
         else:
-            fp = footprinting.wellington(i,reads,**args)
+            fp = footprinting.wellington(i,reads,**kwargs)
         p.apply_async(fp,callback = writetodisk)
         #Hold here while the queue is bigger than the number of reads we're happy to store in memory
         while p._taskqueue.qsize() > max_regions_cached_in_memory:
@@ -124,7 +122,7 @@ def multiWellington(regions,reads,**args):
     p.join()
 
 #TODO: Use **args or something similar to pass arguments?
-#TODO: Pass FDR Parameters
-multiWellington(orderedbychr,reads, shoulder_sizes = clargs.shoulder_sizes ,footprint_sizes = clargs.footprint_sizes, bonferroni = clargs.bonferroni)
+#TODO: Pass FDR Iterations, FDR LimiFDR_cutoff=0.01,FDR_iterations=100
+multiWellington(orderedbychr,reads, shoulder_sizes = clargs.shoulder_sizes ,footprint_sizes = clargs.footprint_sizes, FDR_cutoff=clargs.FDR_cutoff,FDR_iterations=clargs.FDR_iterations,bonferroni = clargs.bonferroni)
 
 wigout.close()
