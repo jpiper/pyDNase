@@ -30,7 +30,7 @@ import pyDNase
 
 class wellington(object):
 
-    def __init__(self,interval,reads,shoulder_sizes=range(35,36), footprint_sizes = range(11,26,2),FDR_cutoff=0.01,FDR_iterations=100,bonferroni=None,**kwargs):
+    def __init__(self,interval,reads,shoulder_sizes=range(35,36), footprint_sizes = range(11,26,2),FDR_cutoff=0.01,FDR_iterations=100,bonferroni=None):
 
         #Set up the model parameters
         self.shoulder_sizes  = shoulder_sizes
