@@ -1,10 +1,11 @@
 __author__ = 'Jason Piper'
 
 import imp
-current_version = imp.load_source('lol', 'pyDNase/_version.py').__version__
+
+current_version = imp.load_source('pyDNaseVersion', 'pyDNase/_version.py').__version__
 
 #Unfortunately, we have to ensure that the user has numpy is installed,
-#as pip is bad at installing numpy and scipy at the same time, and just breaks
+#as pip is bad at installing numpy and matplotlib at the same time, and just breaks
 
 try:
     import numpy
@@ -26,17 +27,16 @@ setup(
     author_email='j.piper@warwick.ac.uk',
     url='http://jpiper.github.io/pyDNase',
     license='GPLv3',
-    ext_modules = [Extension("pyDNase/footprinting/fastbinom", ["pyDNase/footprinting/fastbinom.c"])],
+    ext_modules = [Extension("pyDNase.footprinting.fastbinom", ["pyDNase/footprinting/fastbinom.c"])],
     packages= [
         'pyDNase',
         'pyDNase.footprinting',
     ],
 
     install_requires=[
-        # Note - not enforcing versions for numpy, scipy, and matplotlib
-        # Only basic functionality is used and ithenstallation of se libraries can be a pain
+        # Note - not enforcing versions for numpy and matplotlib
+        # Only basic functionality is used and the installation of these libraries can be a pain
         "numpy", #Tested on >=1.5.0
-        "scipy", #Tested on >=0.9.0
         "matplotlib", #Tested on >=1.2
         "pysam >= 0.7.5",
         "clint >= 0.3.2",

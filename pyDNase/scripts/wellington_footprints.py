@@ -15,13 +15,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import argparse, os
-from scipy import stats
+import argparse, os, math
 from clint.textui import progress,puts
 import pyDNase
 from pyDNase import footprinting
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 parser = argparse.ArgumentParser(description='Footprint the DHSs in a DNase-seq experiment using the Wellington Algorithm.')
 parser.add_argument("-b","--bonferroni",action="store_true", help="Performs a bonferroni correction (default: False)",default=False)
@@ -38,6 +37,27 @@ parser.add_argument("regions", help="BED file of the regions you want to footpri
 parser.add_argument("reads", help="The BAM file containing the DNase-seq reads")
 parser.add_argument("outputdir", help="A writeable directory to write the results to")
 args = parser.parse_args()
+
+def percentile(N, percent):
+    """
+    Find the percentile of a list of values.
+
+    @parameter N - is a list of values.
+    @parameter percent - a float value from 0.0 to 1.0.
+
+    @return - the percentile of the values as a float
+    """
+    if not N:
+        return None
+    N = sorted(N)
+    k = (len(N)-1) * percent
+    f = math.floor(k)
+    c = math.ceil(k)
+    if f == c:
+        return float(N[int(k)])
+    d0 = N[int(f)] * (c-k)
+    d1 = N[int(c)] * (k-f)
+    return float(d0+d1)
 
 #Sanity check parameters from the user
 
@@ -96,7 +116,7 @@ for each in progress.bar(orderedbychr):
         print >> wigout, i
 
     #FDR footprints
-    fdr = stats.scoreatpercentile([a for a in fp.calculate(reads,FDR=True, shoulder_sizes = args.shoulder_sizes ,footprint_sizes = args.footprint_sizes, bonferroni = args.bonferroni)[0].tolist() for i in range(args.FDR_iterations)],int(args.FDR_cutoff*100))
+    fdr = percentile([a for a in fp.calculate(reads,FDR=True, shoulder_sizes = args.shoulder_sizes ,footprint_sizes = args.footprint_sizes, bonferroni = args.bonferroni)[0].tolist() for i in range(args.FDR_iterations)],args.FDR_cutoff)
     if fdr < args.FDR_limit:
         for footprint in fp.footprints(withCutoff=fdr,merge=not args.dont_merge_footprints):
             print >> fdrout, footprint

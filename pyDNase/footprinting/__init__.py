@@ -13,20 +13,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-try:
-    from . import fastbinom as binom
-except ImportError:
-    from scipy.stats import binom
-    print("""Cannot load Cython binomial CDF implementation.
-            loaded the SciPy implementation (Note: This is up to 100x slower!)\n
-            note: This happens if you start python from the pyDNase project folder without manually
-            compiling the fastbinom extension.""")
-
+from . import fastbinom as binom
 from itertools import tee
 import numpy.random
 import numpy as np
 import pyDNase
 import warnings
+
 class wellington(object):
     def __init__(self, interval, reads,
                  shoulder_sizes=range(35,36), footprint_sizes = range(11,26,2), FDR=0, bonferroni = 0,):
