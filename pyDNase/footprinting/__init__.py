@@ -13,20 +13,33 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-try:
-    from . import fastbinom as binom
-except ImportError:
-    from scipy.stats import binom
-    print("""Cannot load Cython binomial CDF implementation.
-            loaded the SciPy implementation (Note: This is up to 100x slower!)\n
-            note: This happens if you start python from the pyDNase project folder without manually
-            compiling the fastbinom extension.""")
-
 from itertools import tee
-import warnings, random
+import warnings, random, math
 import numpy as np
-from scipy import stats
 import pyDNase
+from . import fastbinom as binom
+
+def percentile(N, percent):
+    """
+    Find the percentile of a list of values.
+
+    @parameter N - is a list of values.
+    @parameter percent - a float value from 0.0 to 1.0.
+
+    @return - the percentile of the values as a float
+    """
+    if not N:
+        return None
+    N = sorted(N)
+    k = (len(N)-1) * percent
+    f = math.floor(k)
+    c = math.ceil(k)
+    if f == c:
+        return float(N[int(k)])
+    d0 = N[int(f)] * (c-k)
+    d1 = N[int(c)] * (k-f)
+    return float(d0+d1)
+
 
 class wellington(object):
 
@@ -88,7 +101,8 @@ class wellington(object):
             return self.storedscore
 
     def FDRscore(self):
-        return stats.scoreatpercentile([a for a in self.calculate(FDR=1)[0] for i in range(self.FDR_iterations)],int(self.FDR_cutoff*100))
+        return percentile([a for a in self.calculate(FDR=1)[0] for i in range(self.FDR_iterations)],self.FDR_cutoff)
+
 
     def footprints(self, withCutoff=-30, merge = 1):
         """
