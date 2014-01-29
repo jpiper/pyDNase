@@ -13,7 +13,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from _version import __version__
+from . import _version
+__version__ = _version.__version__
 
 import os
 import numpy as np
