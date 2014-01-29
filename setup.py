@@ -1,5 +1,8 @@
 __author__ = 'Jason Piper'
 
+import imp
+current_version = imp.load_source('lol', 'pyDNase/_version.py').__version__
+
 #Unfortunately, we have to ensure that the user has numpy is installed,
 #as pip is bad at installing numpy and scipy at the same time, and just breaks
 
@@ -13,8 +16,6 @@ try:
 except ImportError:
     from distutils.core import setup
     from distutils.extension import Extension
-
-from pyDNase import __version__ as current_version
 
 setup(
     name='pyDNase',
