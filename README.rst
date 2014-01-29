@@ -3,6 +3,11 @@ pyDNase - a library for analyzing DNase-seq data
 ================================================
 
 
+.. image:: https://travis-ci.org/jpiper/pyDNase.png?branch=master
+    :target: https://travis-ci.org/jpiper/pyDNase
+.. image:: https://coveralls.io/repos/jpiper/pyDNase/badge.png?branch=master
+    :target: https://coveralls.io/r/jpiper/pyDNase?branch=master
+
 Introduction
 ------------
 
