@@ -1,7 +1,8 @@
-0.1.5 - 2014-01-29
+0.1.5 - 2014-01-31
 ==================
 * Removed SciPy requirement
-* Added Travis-CI automated builds for 2.6, 2.7 and 3.3
+* Added Travis-CI automated builds for 2.6, 2.7 and 3.3 and coveralls
+* Fixed WIG output for UCSC compatability
 
 0.1.4 - 2014-01-05
 ==================
