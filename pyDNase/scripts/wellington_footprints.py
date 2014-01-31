@@ -99,6 +99,9 @@ os.makedirs(os.path.join(args.outputdir,"p value cutoffs"))
 wigout = open(os.path.relpath(args.outputdir) + "/" + args.output_prefix + ".WellingtonFootprints.wig","w")
 fdrout = open(os.path.relpath(args.outputdir) + "/" + args.output_prefix + ".WellingtonFootprints.FDR.{0}.bed".format(args.FDR_cutoff),"w")
 
+#Required for UCSC upload
+print >> wigout, "track type=wiggle_0"
+
 #Iterate in chromosome, basepair order
 orderedbychr = [item for sublist in sorted(regions.intervals.values()) for item in sorted(sublist, key=lambda peak: peak.startbp)]
 puts("Calculating footprints...")

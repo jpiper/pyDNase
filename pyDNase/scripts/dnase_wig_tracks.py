@@ -32,6 +32,10 @@ regions = pyDNase.GenomicIntervalSet(args.regions)
 fwigout = open(args.fw_output,"w")
 bwigout = open(args.rev_output,"w")
 
+#Required for UCSC upload
+print >> fwigout, "track type=wiggle_0"
+print >> bwigout, "track type=wiggle_0"
+
 #Prints all the wig values but sorts by chromosome/genomic location first
 #TODO: port this most awesome (and hacky) code iteration code to the main API, possily using a generator expression?
 puts("Writing wig tracks...")
