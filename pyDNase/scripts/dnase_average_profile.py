@@ -48,7 +48,7 @@ fw = []
 rv = []
 puts("Reading Data from BAM file...")
 for each in progress.bar(regions):
-    if reads[each]["+"].sum() and reads[each]["-"].sum():
+    if sum(reads[each]["+"]) and sum(reads[each]["-"]):
         fw.append(reads[each]["+"])
         rv.append(reads[each]["-"])
 plt.plot(np.mean(fw,axis=0),c="red")

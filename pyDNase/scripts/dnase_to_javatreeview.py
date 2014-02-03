@@ -70,13 +70,14 @@ puts("Writing to JTV...")
 for i in progress.bar(sorted(regions, key = sorter)):
     cuts = reads[i]
     if args.a:
-        newarray = (cuts["+"] + cuts["-"])
+        newarray = np.add(cuts["+"], cuts["-"])
         if args.n:
             newarray = normalise_cuts(newarray)
     else:
         if args.n:
             cuts["+"] = normalise_cuts(cuts["+"])
             cuts["-"] = normalise_cuts(cuts["-"])
-        newarray = (cuts["+"] - cuts["-"])
+
+        newarray = np.subtract(cuts["+"], cuts["-"])
 
     outfile.writerow(["NULL","NULL",i.chromosome + ":" + str(i.startbp) + ":" + str(i.endbp)] + newarray.tolist())
