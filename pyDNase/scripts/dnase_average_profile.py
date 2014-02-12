@@ -28,6 +28,7 @@ from matplotlib import rcParams
 parser = argparse.ArgumentParser(description='Plots average profile of DNase activity surrounding a list of regions in a BED file')
 parser.add_argument("-w", "--window_size", help="Size of flanking area around centre of the regions to plot (default: 100)",default=100,type=int)
 parser.add_argument("-i",action="store_true", help="Ignores any strand information in BED file and plots data relative to reference strand",default=False)
+parser.add_argument("-c",action="store_true", help="Combine the strand information into one graph",default=False)
 parser.add_argument("regions", help="BED file of the regions you want to generate the average profile for")
 parser.add_argument("reads", help="The BAM file containing the DNase-seq data")
 parser.add_argument("output", help="filename to write the output to")
@@ -51,8 +52,12 @@ for each in progress.bar(regions):
     if sum(reads[each]["+"]) and sum(reads[each]["-"]):
         fw.append(reads[each]["+"])
         rv.append(reads[each]["-"])
-plt.plot(np.mean(fw,axis=0),c="red")
-plt.plot(np.mean(rv,axis=0),c="green")
+
+if args.c:
+    plt.plot(np.add(np.mean(fw,axis=0),np.mean(rv,axis=0)),c="red")
+else:
+    plt.plot(np.mean(fw,axis=0),c="red")
+    plt.plot(np.mean(rv,axis=0),c="blue")
 
 #Pad the axis out reads bit
 rcParams['xtick.major.pad'] = 20 
