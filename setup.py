@@ -26,7 +26,7 @@ setup(
     author_email='j.piper@warwick.ac.uk',
     url='http://jpiper.github.io/pyDNase',
     license='GPLv3',
-    ext_modules = [Extension("pyDNase.footprinting.WellingtonC", sources = ["pyDNase/footprinting/WellingtonC.c"])],
+    ext_modules = [Extension("pyDNase.footprinting.WellingtonC", sources = ["pyDNase/footprinting/WellingtonC.c"], extra_compile_args=['-std=c99'])],
     packages= [
         'pyDNase',
         'pyDNase.footprinting',
