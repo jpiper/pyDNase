@@ -13,31 +13,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from itertools import tee
-import warnings, random, math
+import warnings, random
 import numpy as np
 import pyDNase
-from . import WellingtonC as binom
-
-percentile = binom.percentile
-
-# def wellington_score(mini_array_f,mini_array_r,shoulder_size,fp_size):
-#        # print sample_size_f, sample_size_r
-#        #print mini_array_f, mini_array_r
-#        # exit()
-#         #print sample_size_f,sample_size_r
-#        # print mini_array_f, mini_array_r
-#         #exit()
-#         xForward = sum(mini_array_f[:shoulder_size])
-#         nForward = sum(mini_array_f[shoulder_size:-shoulder_size] + mini_array_f[:shoulder_size])
-#         xBackward= sum(mini_array_r[shoulder_size+fp_size:])
-#         nBackward= sum(mini_array_r[shoulder_size:-shoulder_size] + mini_array_r[shoulder_size+fp_size:])
-#         p = float(shoulder_size) / (shoulder_size + fp_size)
-#         if xForward and xBackward:
-#             return binom.logsf(int(xForward - 1), int(nForward), p) + binom.logsf(int(xBackward - 1), int(nBackward), p)
-#         else:
-#             return 0
-
+from . import WellingtonC
 
 class wellington(object):
 
@@ -91,15 +70,17 @@ class wellington(object):
         else:
             self.storedscore, self.storedlengths   = self.calculate()
             return self.storedlengths
+
     @property
     def scores(self):
         if self.storedlengths != None: return self.storedscore
         else:
             self.storedscore, self.storedlengths   = self.calculate()
+            print self.storedlengths
             return self.storedscore
 
     def FDRscore(self):
-        return percentile([a for a in self.calculate(FDR=1)[0] for i in range(self.FDR_iterations)],self.FDR_cutoff)
+        return WellingtonC.percentile([a for a in self.calculate(FDR=1)[0] for i in range(self.FDR_iterations)],self.FDR_cutoff)
 
 
     def footprints(self, withCutoff=-30, merge = 1):
@@ -145,7 +126,7 @@ class wellington(object):
 
     def calculate(self,FDR=0):
         #The passes the read data to the Cython wrapper for Wellington. This yields a roughly 4x speed improvement
-        return binom.calculate(FDR,self.reads["+"],self.reads["-"],self.footprint_sizes,self.shoulder_sizes, self.bonferroni_factor)
+        return WellingtonC.calculate(FDR,self.reads["+"],self.reads["-"],self.footprint_sizes,self.shoulder_sizes, self.bonferroni_factor)
 
 
 class wellington1D(wellington):
@@ -179,7 +160,7 @@ class wellington1D(wellington):
                     if x:
                         p = (shoulder_size*2) / float((shoulder_size*2) + fp_size)
                         #This stores the p values and the fp_size used to calculate them in reads tuple. in the log_probs[] list
-                        score = binom.logsf(int(x - 1), int(n), p)
+                        score = WellingtonC.logsf(int(x - 1), int(n), p)
                         log_probs[i].append([score,fp_size])
         #This iterates over all the base pairs in the region and creates arrays for the best score and footprint size
         best_probabilities = []

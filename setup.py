@@ -34,7 +34,6 @@ setup(
 
     install_requires=[
         # Note - not enforcing versions for numpy, scipy, and matplotlib
-        # Only basic functionality is used and ithenstallation of se libraries can be a pain
         "numpy", #Tested on >=1.5.0
         "matplotlib", #Tested on >=1.2
         "pysam >= 0.7.5",

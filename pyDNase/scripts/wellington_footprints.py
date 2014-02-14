@@ -97,7 +97,7 @@ def writetodisk(fp):
     #FDR cutoff footprints
     fdr = fp.FDR_value
     if fdr < clargs.FDR_limit:
-         for footprint in fp.footprints(withCutoff=fdr,merge=not clargs.dont_merge_footprints):
+         for footprint in fp.footprints(withCutoff=fdr,merge=clargs.dont_merge_footprints):
              print >> fdrout, footprint
     #p-value cutoff footprints
     for fpscore in clargs.pv_cutoffs:

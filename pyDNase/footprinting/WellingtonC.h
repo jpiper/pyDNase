@@ -166,39 +166,43 @@ struct tuple2 * wellington(unsigned int * f,  unsigned int * r, unsigned int len
 {
 	float * scores = calloc(length, sizeof(float));
 	unsigned int * mle = calloc(length, sizeof(unsigned int));
-
-	for (unsigned int i = 0; i < shoulders; i++) {
-	    unsigned const int shoulder = shoulder_sizes[i];
+	for (unsigned int i = 0; i < shoulders; i++)
+	{
+		unsigned const int shoulder = shoulder_sizes[i];
 		unsigned int * const f_bindingArray = rolling_window(f,shoulder, length);
 		unsigned int * const b_bindingArray = rolling_window(r,shoulder, length);
 
-	for(unsigned int j = 0 ;j < fps ;j++)
-	{
-	    unsigned const int fp_size = fp_sizes[j];
-		unsigned int * const fw_fpscores = rolling_window(f,fp_size, length);
-		unsigned int * const rv_fpscores = rolling_window(r,fp_size, length);
-		unsigned const int halffpround = floor((fp_size-1)/2);
-		for (unsigned int i = halffpround + shoulder ; i < length-shoulder-halffpround; i++)
-        {
+		for(unsigned int j = 0 ;j < fps ;j++)
+		{
 
-			unsigned const int xForward  = f_bindingArray[i-halffpround-1-shoulder+1];
-			unsigned const int nForward  = xForward + fw_fpscores[i-halffpround];
-			unsigned const int xBackward = b_bindingArray[i+halffpround+1];
-			unsigned const int nBackward = xBackward + rv_fpscores[i-halffpround];
-			if (xForward > 0 & xBackward > 0)
+			unsigned const int fp_size = fp_sizes[j];
+			unsigned int * const fw_fpscores = rolling_window(f,fp_size, length);
+			unsigned int * const rv_fpscores = rolling_window(r,fp_size, length);
+			unsigned const int halffpround = floor((fp_size-1)/2);
+
+			for (unsigned int i = halffpround + shoulder ; i < length-shoulder-halffpround; i++)
 			{
-				float const p = (float)shoulder / (shoulder + fp_size);
-				float const score = bdtrc(xForward - 1, nForward, p) + bdtrc(xBackward - 1, nBackward, p);
-				if(score < scores[i])
+
+				unsigned const int xForward  = f_bindingArray[i-halffpround-1-shoulder+1];
+				unsigned const int nForward  = xForward + fw_fpscores[i-halffpround];
+				unsigned const int xBackward = b_bindingArray[i+halffpround+1];
+				unsigned const int nBackward = xBackward + rv_fpscores[i-halffpround];
+
+				if (xForward > 0 & xBackward > 0)
 				{
-					scores[i] = score;
-					mle[i] = fp_size;
+					float const p = (float)shoulder / (shoulder + fp_size);
+					float const score = bdtrc(xForward - 1, nForward, p) + bdtrc(xBackward - 1, nBackward, p);
+
+					if(score < scores[i])
+					{
+						scores[i] = score;
+						mle[i] = fp_size;
+					}
 				}
 			}
-        }
-        free(fw_fpscores);
-        free(rv_fpscores);
-	}
+			free(fw_fpscores);
+			free(rv_fpscores);
+		}
 		free(f_bindingArray);
 		free(b_bindingArray);
 	}

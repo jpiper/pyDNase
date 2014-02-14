@@ -20,23 +20,6 @@ def logcdf(a,b,c):
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.nonecheck(False)
-def window(iterable, int size):
-    """
-    Takes reads list (iterable) and returns reads list, each of length size, of rolling windows.
-    >>> [i for i in window(range(0,12,2), 3)]
-    [(0, 2, 4), (2, 4, 6), (4, 6, 8), (6, 8, 10)]
-    """
-    iters = tee(iterable, size)
-    cdef unsigned int i
-    for i in range(1, size):
-        for each in iters[i:]:
-            next(each, None)
-    return zip(*iters)
-
-
-@cython.boundscheck(False)
-@cython.wraparound(False)
-@cython.nonecheck(False)
 cpdef percentile(list N, float percent):
     """
     Find the percentile of a list of values.
@@ -56,21 +39,21 @@ cpdef percentile(list N, float percent):
     c = math.ceil(k)
     if f == c:
         return float(N[int(k)])
-    d0 = N[int(f)] * (c-k)
-    d1 = N[int(c)] * (k-f)
-    return float(d0+d1)
+    d0 = N[f] * (c-k)
+    d1 = N[c] * (k-f)
+    return d0+d1
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.nonecheck(False)
-def calculate(FDR,list forwardArray,list backwardArray, footprint_sizes, shoulder_sizes, bonferroni_factor):
+def calculate(FDR, list forwardArray, list backwardArray, footprint_sizes, shoulder_sizes, bonferroni_factor):
 
+    #If we're looking for an FDR, shuffle the data here.
     if FDR:
         random.shuffle(forwardArray)
         random.shuffle(backwardArray)
 
     cdef unsigned asize = len(forwardArray)
-
 
     #Copy the forward and reverse reads and the shoulder and fp sizes into the C arrays
     cdef unsigned int *farr  = <unsigned int *> malloc(asize * sizeof(unsigned int))
@@ -101,7 +84,7 @@ def calculate(FDR,list forwardArray,list backwardArray, footprint_sizes, shoulde
             f.append(min(0,test.fpscores[j] - bonferroni_factor))
         else:
             f.append(test.fpscores[j])
-        m.append(test.mles[j])
+        m.append(int(test.mles[j]))
 
     #Clean everything up
     free(test.mles)
