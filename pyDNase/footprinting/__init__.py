@@ -76,7 +76,6 @@ class wellington(object):
         if self.storedlengths != None: return self.storedscore
         else:
             self.storedscore, self.storedlengths   = self.calculate()
-            print self.storedlengths
             return self.storedscore
 
     def FDRscore(self):
