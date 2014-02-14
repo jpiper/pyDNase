@@ -17,28 +17,26 @@ from itertools import tee
 import warnings, random, math
 import numpy as np
 import pyDNase
-from . import fastbinom as binom
+from . import WellingtonC as binom
 
-def percentile(N, percent):
-    """
-    Find the percentile of a list of values.
+percentile = binom.percentile
 
-    @parameter N - is a list of values.
-    @parameter percent - a float value from 0.0 to 1.0.
-
-    @return - the percentile of the values as a float
-    """
-    if not N:
-        return None
-    N = sorted(N)
-    k = (len(N)-1) * percent
-    f = math.floor(k)
-    c = math.ceil(k)
-    if f == c:
-        return float(N[int(k)])
-    d0 = N[int(f)] * (c-k)
-    d1 = N[int(c)] * (k-f)
-    return float(d0+d1)
+# def wellington_score(mini_array_f,mini_array_r,shoulder_size,fp_size):
+#        # print sample_size_f, sample_size_r
+#        #print mini_array_f, mini_array_r
+#        # exit()
+#         #print sample_size_f,sample_size_r
+#        # print mini_array_f, mini_array_r
+#         #exit()
+#         xForward = sum(mini_array_f[:shoulder_size])
+#         nForward = sum(mini_array_f[shoulder_size:-shoulder_size] + mini_array_f[:shoulder_size])
+#         xBackward= sum(mini_array_r[shoulder_size+fp_size:])
+#         nBackward= sum(mini_array_r[shoulder_size:-shoulder_size] + mini_array_r[shoulder_size+fp_size:])
+#         p = float(shoulder_size) / (shoulder_size + fp_size)
+#         if xForward and xBackward:
+#             return binom.logsf(int(xForward - 1), int(nForward), p) + binom.logsf(int(xBackward - 1), int(nBackward), p)
+#         else:
+#             return 0
 
 
 class wellington(object):
@@ -145,84 +143,9 @@ class wellington(object):
                 returnSet += region
         return returnSet
 
-    def window(self, iterable, size):
-        """
-        Takes reads list (iterable) and returns reads list, each of length size, of rolling windows.
-        >>> [i for i in window(range(0,12,2), 3)]
-        [(0, 2, 4), (2, 4, 6), (4, 6, 8), (6, 8, 10)]
-        """
-        iters = tee(iterable, size)
-        for i in range(1, size):
-            for each in iters[i:]:
-                next(each, None)
-        return zip(*iters)
-
     def calculate(self,FDR=0):
-        #TODO: write docstring and doctest
-
-        #cuts = self.reads
-        forwardArray, backwardArray     = self.reads["+"], self.reads["-"]
-
-        if FDR:
-            random.shuffle(forwardArray)
-            random.shuffle(backwardArray)
-        #print forwardArray
-
-        #Let's compute all the possible binding arrays, this really helps when iterating over multiple footprint sizes
-        fw_fpscores_dict = {}
-        rv_fpscores_dict = {}
-
-        for fp_size in self.footprint_sizes:
-            halffpround = int((fp_size-1)/2)
-            fw_fpscores_dict[fp_size] = [0] * halffpround + [sum(i) for i in self.window(forwardArray, fp_size)]
-            rv_fpscores_dict[fp_size] = [0] * halffpround + [sum(i) for i in self.window(backwardArray,fp_size)]
-
-       #Empty list of lists for storing the footprint scores
-        log_probs       = [[] for i in range(len(forwardArray))]
-
-
-        #testing multiple background sizes
-        for shoulder_size in self.shoulder_sizes:
-            #This computes the background cut sums for the specified shoulder_size for all basepairs
-            f_bindingArray = [0] * (shoulder_size - 1) + [sum(i) for i in self.window(forwardArray,shoulder_size)]
-            b_bindingArray = [sum(i) for i in self.window(backwardArray,shoulder_size)] + [0] * (shoulder_size - 1)
-
-            for fp_size in self.footprint_sizes:
-                halffpround = int((fp_size-1)/2)
-                #This computes the binding cut sums for the specified fp_size for all basepairs
-                fw_fpscores = fw_fpscores_dict[fp_size]
-                rv_fpscores = rv_fpscores_dict[fp_size]
-
-                for i in range(shoulder_size+halffpround,len(forwardArray)-shoulder_size-halffpround):
-                    xForward  = f_bindingArray[i-halffpround-1]
-                    nForward  = xForward + fw_fpscores[i]
-                    xBackward = b_bindingArray[i+halffpround+1]
-                    nBackward = xBackward + rv_fpscores[i]
-                    #This requires that there are DNase Cuts present on both strands
-                    if xForward and xBackward:
-                        #Null hypothesis for probability to randomly hit background
-                        p = float(shoulder_size) / (shoulder_size + fp_size)
-                        #This stores the P values and the fp_size used to calculate them in reads tuple. in the log_probs[] list
-                        score = binom.logsf(int(xForward - 1), int(nForward), p) + binom.logsf(int(xBackward - 1), int(nBackward), p)
-                        log_probs[i].append([score,fp_size])
-
-        #This iterates over all the base pairs in the region and creates arrays for the best score and footprint size
-        best_probabilities = []
-        best_footprintsizes = []
-        for i in range(len(forwardArray)):
-            if log_probs[i]:
-                best_params =  min(log_probs[i])
-                #This catches anything which has floated to negative infinity - but it might not be the best way
-                best_score = max(-1000,best_params[0])
-                if self.bonferroni_factor:
-                    best_probabilities.append(min(0,best_score - self.bonferroni_factor))
-                else:
-                    best_probabilities.append(best_score)
-                    best_footprintsizes.append(best_params[1])
-            else:
-                best_probabilities.append(0)
-                best_footprintsizes.append(0)
-        return best_probabilities, best_footprintsizes
+        #The passes the read data to the Cython wrapper for Wellington. This yields a roughly 4x speed improvement
+        return binom.calculate(FDR,self.reads["+"],self.reads["-"],self.footprint_sizes,self.shoulder_sizes, self.bonferroni_factor)
 
 
 class wellington1D(wellington):

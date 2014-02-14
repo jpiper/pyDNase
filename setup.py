@@ -26,7 +26,7 @@ setup(
     author_email='j.piper@warwick.ac.uk',
     url='http://jpiper.github.io/pyDNase',
     license='GPLv3',
-    ext_modules = [Extension("pyDNase.footprinting.fastbinom", sources = ["pyDNase/footprinting/fastbinom.c"])],
+    ext_modules = [Extension("pyDNase.footprinting.WellingtonC", sources = ["pyDNase/footprinting/WellingtonC.c"])],
     packages= [
         'pyDNase',
         'pyDNase.footprinting',
@@ -36,7 +36,6 @@ setup(
         # Note - not enforcing versions for numpy, scipy, and matplotlib
         # Only basic functionality is used and ithenstallation of se libraries can be a pain
         "numpy", #Tested on >=1.5.0
-        # "scipy", #Tested on >=0.9.0
         "matplotlib", #Tested on >=1.2
         "pysam >= 0.7.5",
         "clint >= 0.3.2",
