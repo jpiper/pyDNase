@@ -11,6 +11,7 @@ cdef extern from "WellingtonC.h":
     double bdtrc(int, int, float)
     double bdtr(int, int, float)
     tuple2 * wellington(unsigned int *, unsigned int *, unsigned int,unsigned int *, unsigned int,unsigned int *, unsigned int)
+    tuple2 * diff_wellington(unsigned int * f,  unsigned int * r, unsigned int * f2,  unsigned int * r2, unsigned int length, unsigned int * offsets, unsigned int * widths, unsigned int num_offsets)
 
 def logsf(a,b,c):
     return bdtrc(a, b, c)
@@ -43,6 +44,50 @@ cpdef percentile(list N, float percent):
     d1 = N[c] * (k-f)
     return d0+d1
 
+
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.nonecheck(False)
+def diff_calculate(list forwardArray, list backwardArray,list forwardArray2, backwardArray2, footprint_sizes, offset_positions):
+    cdef unsigned asize = len(forwardArray)
+    cdef unsigned int *farr  = <unsigned int *> malloc(asize * sizeof(unsigned int))
+    cdef unsigned int *rarr  = <unsigned int *> malloc(asize * sizeof(unsigned int))
+    cdef unsigned int *farr2  = <unsigned int *> malloc(asize * sizeof(unsigned int))
+    cdef unsigned int *rarr2  = <unsigned int *> malloc(asize * sizeof(unsigned int))
+    cdef unsigned int *fpsize  = <unsigned int *> malloc(len(footprint_sizes) * sizeof(unsigned int))
+    cdef unsigned int *offsets  = <unsigned int *> malloc(len(offset_positions) * sizeof(unsigned int))
+    for k in range(asize):
+        farr[k] = forwardArray[k]
+        rarr[k] = backwardArray[k]
+        farr2[k] = forwardArray2[k]
+        rarr2[k] = backwardArray2[k]
+
+    for index, size in enumerate(footprint_sizes):
+        fpsize[index] = size
+    for index, size in enumerate(offset_positions):
+        offsets[index] = size
+    #diff_wellington(unsigned int * f,  unsigned int * r, unsigned int * f2,  unsigned int * r2, unsigned int length, unsigned int * offsets, unsigned int * widths, unsigned int num_offsets)
+   # tuple2 * test = diff_wellington(farr,  rarr, farr2,  rarr2, asize, offsets, fpsize, len(footprint_sizes))
+    cdef tuple2 * test = diff_wellington(farr,  rarr, farr2,  rarr2, asize, offsets, fpsize, len(footprint_sizes))
+    #Push the values from C arrays back into Python lists
+    cdef list m,f
+    m, f  = [], []
+    cdef unsigned int j
+    for j in range(asize):
+        f.append(test.fpscores[j])
+        m.append(int(test.mles[j]))
+
+    #Clean everything up
+    free(test.mles)
+    free(test.fpscores)
+    free(test)
+    free(farr)
+    free(rarr)
+
+    #Return the Scores and the FP parameters
+    return(f,m)
+
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.nonecheck(False)
@@ -71,9 +116,6 @@ def calculate(FDR, list forwardArray, list backwardArray, footprint_sizes, shoul
 
     #Farm off the Computation to C
     cdef tuple2 * test = wellington(farr,rarr,asize,shsize,len(shoulder_sizes),fpsize,len(footprint_sizes))
-    #Free the arrays
-    free(farr)
-    free(rarr)
 
     #Push the values from C arrays back into Python lists
     cdef list m,f
@@ -90,6 +132,8 @@ def calculate(FDR, list forwardArray, list backwardArray, footprint_sizes, shoul
     free(test.mles)
     free(test.fpscores)
     free(test)
+    free(farr)
+    free(rarr)
 
     #Return the Scores and the FP parameters
     return(f,m)

@@ -211,3 +211,182 @@ struct tuple2 * wellington(unsigned int * f,  unsigned int * r, unsigned int len
 	retarr->mles = mle;
 	return retarr;
 }
+
+void add(unsigned int * a, unsigned int * b, int k)
+{
+	for (int i = 0; i < k; i++) {
+		a[i] += b[i];
+	}
+}
+
+unsigned int slice(unsigned int * arr, int from, int to)
+{
+	unsigned int total = 0;
+	for (unsigned int i = from; i < to; i ++) {
+		total += arr[i];
+	}
+	return total;
+
+}
+
+int floatcomp(const void* elem1, const void* elem2)
+{
+    if(*(const float*)elem1 < *(const float*)elem2)
+        return -1;
+    return *(const float*)elem1 > *(const float*)elem2;
+}
+
+float percentileofscore(float * N, int size, float score)
+{
+	// First, sort the list
+	qsort(N, size, sizeof(float), floatcomp);
+	int count = 0;
+
+
+	for (int i = 0; i < size; i++) {
+		if(score >= N[i])
+		{
+			count++;
+		}
+		else
+		{
+			break;
+		}
+	}
+	float result =((float)count/ (float)size) * 100.0;
+	return result;
+}
+
+
+
+void shuffle(unsigned int *array, size_t n)
+{
+    struct timeval tv;
+    gettimeofday(&tv, NULL);
+    int usec = tv.tv_usec;
+    srand48(usec);
+    if (n > 1) {
+        size_t i;
+        for (i = n - 1; i > 0; i--) {
+            size_t j = (unsigned int) (drand48()*(i+1));
+            int t = array[j];
+            array[j] = array[i];
+            array[i] = t;
+        }
+    }
+}
+
+
+
+struct tuple2 * diff_wellington(unsigned int * f,  unsigned int * r, unsigned int * f2,  unsigned int * r2, unsigned int length, unsigned int * offsets, unsigned int * widths, unsigned int num_offsets)
+{
+	unsigned const short int shoulder = 35;
+	float * scores = calloc(length, sizeof(float));
+	for(int i = 0; i < length; i ++)
+	{
+	    scores[i] = 100.0;
+	}
+	//memset(scores,100.0,length)
+	unsigned int * mle = calloc(length, sizeof(unsigned int));
+
+	// Let's just deal with one shoulder for the moment
+	//	unsigned int * const f_bindingArray = rolling_window(f,shoulder, length);
+	//	unsigned int * const b_bindingArray = rolling_window(r,shoulder, length);
+	//	unsigned int * const f_bindingArray2 = rolling_window(f2,shoulder, length);
+	//	unsigned int * const b_bindingArray2 = rolling_window(r2,shoulder, length);
+	//First, we only need to consider the exact positions of the current footprints
+
+	for (unsigned int i = 0; i < num_offsets; i++)
+	{
+		//Now we know the offset!
+		unsigned int offset = offsets[i];
+		unsigned int width = widths[i];
+
+		//Now we have the offset and the widths, let's search around the footprint size
+		for (unsigned int fp_size = width-2; fp_size <= width + 2; fp_size += 2 )
+		{
+			unsigned int halffpround = (fp_size/2);
+			//Here we need the reference values for the reads
+			unsigned int * t_f =  calloc(sizeof(unsigned int) , (shoulder + shoulder + fp_size));
+			unsigned int * t_r =  calloc(sizeof(unsigned int) , (shoulder + shoulder + fp_size));
+			memcpy(t_f, f + offset - halffpround - shoulder, shoulder + shoulder + fp_size * sizeof(unsigned int));
+			memcpy(t_r, r + offset - halffpround - shoulder, shoulder + shoulder + fp_size * sizeof(unsigned int));
+
+			//t_f and t_r now contain the reference arrays
+
+			//Move the window left and right
+			for (unsigned int centre = offset -3; centre <= offset +3 ; centre++)
+			{
+				unsigned int * t_f2 =  calloc(sizeof(unsigned int) , (shoulder + shoulder + fp_size));
+				unsigned int * t_r2 =  calloc(sizeof(unsigned int) , (shoulder + shoulder + fp_size));
+
+				memcpy(t_f2, f2 + centre - halffpround - shoulder, (shoulder + shoulder + fp_size) * sizeof(unsigned int));
+				memcpy(t_r2, r2 + centre - halffpround - shoulder, (shoulder + shoulder + fp_size) * sizeof(unsigned int));
+
+				//Ok so now we have t_f, t_f2 etc...
+				//First, we add them together
+				add(t_f2,t_f,shoulder + shoulder + fp_size);
+				add(t_r2,t_r,shoulder + shoulder + fp_size);
+
+				unsigned const int xForward  = slice(t_f2,0,shoulder);
+				unsigned const int nForward  = slice(t_f2,0,shoulder + fp_size);
+				unsigned const int xBackward = slice(t_r2,shoulder + fp_size,shoulder + shoulder + fp_size);
+				unsigned const int nBackward = slice(t_r2,shoulder,shoulder + shoulder + fp_size);
+				float prior_score;
+				if (xForward > 0 & xBackward > 0)
+				{
+					float const p = (float)shoulder / (shoulder + fp_size);
+					prior_score = bdtrc(xForward - 1, nForward, p) + bdtrc(xBackward - 1, nBackward, p);
+				}
+                int samples = 1000;
+
+				float * bootstrap_score = calloc(samples, sizeof(float));
+
+				for (int i = 0; i<samples; i++)
+				{
+					//Copy back the original r2 and f2 values
+					memcpy(t_f2, f2 + centre - halffpround - shoulder, (shoulder + shoulder + fp_size) * sizeof(unsigned int));
+					memcpy(t_r2, r2 + centre - halffpround - shoulder, (shoulder + shoulder + fp_size) * sizeof(unsigned int));
+					shuffle(t_f2, shoulder + shoulder + fp_size);
+					shuffle(t_r2, shoulder + shoulder + fp_size);
+					add(t_f2,t_f,shoulder + shoulder + fp_size);
+					add(t_r2,t_r,shoulder + shoulder + fp_size);
+
+					unsigned const int xForward  = slice(t_f2,0,shoulder);
+					unsigned const int nForward  = slice(t_f2,0,shoulder + fp_size);
+					unsigned const int xBackward = slice(t_r2,shoulder + fp_size,shoulder + shoulder + fp_size);
+					unsigned const int nBackward = slice(t_r2,shoulder,shoulder + shoulder + fp_size);
+					if (xForward > 0 & xBackward > 0)
+					{
+						float const p = (float)shoulder / (shoulder + fp_size);
+						bootstrap_score[i] = bdtrc(xForward - 1, nForward, p) + bdtrc(xBackward - 1, nBackward, p);
+					}
+
+				}
+				float score = percentileofscore(bootstrap_score, samples, prior_score);
+				if(score < scores[offset])
+				{
+					scores[offset] = score;
+					mle[offset] = width;
+				}
+				free(bootstrap_score);
+			    free(t_f2);
+			    free(t_r2);
+			}
+		free(t_f);
+		free(t_r);
+		}
+
+	}
+	for(int i = 0; i < length; i ++)
+	{
+	    if(scores[i] == 100.0)
+	    {
+			scores[i] = 0.0;
+	    }
+	}
+	struct tuple2 * const retarr = malloc(sizeof(struct tuple2));
+	retarr->fpscores = scores;
+	retarr->mles = mle;
+	return retarr;
+}
