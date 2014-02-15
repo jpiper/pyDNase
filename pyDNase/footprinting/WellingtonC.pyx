@@ -11,7 +11,7 @@ cdef extern from "WellingtonC.h":
     double bdtrc(int, int, float)
     double bdtr(int, int, float)
     tuple2 * wellington(unsigned int *, unsigned int *, unsigned int,unsigned int *, unsigned int,unsigned int *, unsigned int)
-    tuple2 * diff_wellington(unsigned int * f,  unsigned int * r, unsigned int * f2,  unsigned int * r2, unsigned int length, unsigned int * offsets, unsigned int * widths, unsigned int num_offsets)
+    tuple2 * diff_wellington(unsigned int * f,  unsigned int * r, unsigned int * f2,  unsigned int * r2, unsigned int length, unsigned int * offsets, unsigned int * widths, unsigned int num_offsets,float threshold)
 
 def logsf(a,b,c):
     return bdtrc(a, b, c)
@@ -49,7 +49,7 @@ cpdef percentile(list N, float percent):
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.nonecheck(False)
-def diff_calculate(list forwardArray, list backwardArray,list forwardArray2, backwardArray2, footprint_sizes, offset_positions):
+def diff_calculate(list forwardArray, list backwardArray,list forwardArray2, backwardArray2, footprint_sizes, offset_positions,float threshold):
     cdef unsigned asize = len(forwardArray)
     cdef unsigned int *farr  = <unsigned int *> malloc(asize * sizeof(unsigned int))
     cdef unsigned int *rarr  = <unsigned int *> malloc(asize * sizeof(unsigned int))
@@ -69,7 +69,7 @@ def diff_calculate(list forwardArray, list backwardArray,list forwardArray2, bac
         offsets[index] = size
     #diff_wellington(unsigned int * f,  unsigned int * r, unsigned int * f2,  unsigned int * r2, unsigned int length, unsigned int * offsets, unsigned int * widths, unsigned int num_offsets)
    # tuple2 * test = diff_wellington(farr,  rarr, farr2,  rarr2, asize, offsets, fpsize, len(footprint_sizes))
-    cdef tuple2 * test = diff_wellington(farr,  rarr, farr2,  rarr2, asize, offsets, fpsize, len(footprint_sizes))
+    cdef tuple2 * test = diff_wellington(farr,  rarr, farr2,  rarr2, asize, offsets, fpsize, len(footprint_sizes),threshold)
     #Push the values from C arrays back into Python lists
     cdef list m,f
     m, f  = [], []
@@ -84,6 +84,10 @@ def diff_calculate(list forwardArray, list backwardArray,list forwardArray2, bac
     free(test)
     free(farr)
     free(rarr)
+    free(farr2)
+    free(rarr2)
+    free(fpsize)
+    free(offsets)
 
     #Return the Scores and the FP parameters
     return(f,m)
@@ -134,6 +138,8 @@ def calculate(FDR, list forwardArray, list backwardArray, footprint_sizes, shoul
     free(test)
     free(farr)
     free(rarr)
+    free(shsize)
+    free(fpsize)
 
     #Return the Scores and the FP parameters
     return(f,m)

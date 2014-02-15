@@ -278,9 +278,9 @@ void shuffle(unsigned int *array, size_t n)
 
 
 
-struct tuple2 * diff_wellington(unsigned int * f,  unsigned int * r, unsigned int * f2,  unsigned int * r2, unsigned int length, unsigned int * offsets, unsigned int * widths, unsigned int num_offsets)
+struct tuple2 * diff_wellington(unsigned int * f,  unsigned int * r, unsigned int * f2,  unsigned int * r2, unsigned int length, unsigned int * offsets, unsigned int * widths, unsigned int num_offsets, float threshold)
 {
-	unsigned const short int shoulder = 35;
+	unsigned short int shoulder = 35;
 	float * scores = calloc(length, sizeof(float));
 	for(int i = 0; i < length; i ++)
 	{
@@ -306,14 +306,35 @@ struct tuple2 * diff_wellington(unsigned int * f,  unsigned int * r, unsigned in
 		for (unsigned int fp_size = width-2; fp_size <= width + 2; fp_size += 2 )
 		{
 			unsigned int halffpround = (fp_size/2);
-			//Here we need the reference values for the reads
+
+			shoulder = 35 - halffpround;
+
+			//Here we need the reference values forthe reads
 			unsigned int * t_f =  calloc(sizeof(unsigned int) , (shoulder + shoulder + fp_size));
 			unsigned int * t_r =  calloc(sizeof(unsigned int) , (shoulder + shoulder + fp_size));
-			memcpy(t_f, f + offset - halffpround - shoulder, shoulder + shoulder + fp_size * sizeof(unsigned int));
-			memcpy(t_r, r + offset - halffpround - shoulder, shoulder + shoulder + fp_size * sizeof(unsigned int));
+			memcpy(t_f, f + offset - halffpround - shoulder, (shoulder + shoulder + fp_size) * sizeof(unsigned int));
+			memcpy(t_r, r + offset - halffpround - shoulder, (shoulder + shoulder + fp_size) * sizeof(unsigned int));
 
 			//t_f and t_r now contain the reference arrays
 
+            //TODO: AT THIS POINT, CHECK FORE THRESHOLD PASSING!
+
+            unsigned const int xForwardt  = slice(t_f,0,shoulder);
+			unsigned const int nForwardt  = slice(t_f,0,shoulder + fp_size);
+			unsigned const int xBackwardt = slice(t_r,shoulder + fp_size,shoulder + shoulder + fp_size);
+			unsigned const int nBackwardt = slice(t_r,shoulder,shoulder + shoulder + fp_size);
+
+            float t_score = 0.0;
+
+            if (xForwardt > 0 & xBackwardt > 0)
+				{
+				    float const p = (float)shoulder / (shoulder + fp_size);
+				    t_score = bdtrc(xForwardt - 1, nForwardt, p) + bdtrc(xBackwardt - 1, nBackwardt, p);
+				}
+
+            //printf("%d %d %d %d  \n",xForwardt, nForwardt,xBackwardt, nBackwardt);
+            if(t_score < threshold)
+            {
 			//Move the window left and right
 			for (unsigned int centre = offset -3; centre <= offset +3 ; centre++)
 			{
@@ -372,6 +393,7 @@ struct tuple2 * diff_wellington(unsigned int * f,  unsigned int * r, unsigned in
 				free(bootstrap_score);
 			    free(t_f2);
 			    free(t_r2);
+			}
 			}
 		free(t_f);
 		free(t_r);
