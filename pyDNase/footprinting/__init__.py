@@ -32,6 +32,9 @@ class wellington(object):
         else:
             self.bonferroni_factor = None
 
+        #Here we check if the interval is big enough for the parameters give
+        if len(interval) < (max(shoulder_sizes)*2) + max(footprint_sizes):
+            raise ValueError("The interval you're trying to footprint is smaller than the parameters you've passed.")
 
         self.interval        = interval
         if self.interval.strand is "-":
