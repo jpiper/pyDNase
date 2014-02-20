@@ -139,10 +139,10 @@ if( k == n )
 return( log(dk) );
 }
 
-unsigned int * rolling_window(unsigned int * ist, unsigned int w_size, unsigned int size)
+unsigned int * rolling_window(unsigned int const * const ist, unsigned int const w_size, unsigned int const size)
 {
 	//unsigned int * totals  = malloc(sizeof(unsigned int) * size + 1 - w_size);;
-	unsigned int * totals = malloc(sizeof(unsigned int) * (size + 1 - w_size));
+	unsigned int * const totals = malloc(sizeof(unsigned int) * (size + 1 - w_size));
 	unsigned int rollingadd = 0;
 	for (unsigned int i = 0; i <w_size; i++)
 	{
@@ -162,10 +162,10 @@ struct tuple2{
 	unsigned int * mles;
 } ;
 
-struct tuple2 * wellington(unsigned int * f,  unsigned int * r, unsigned int length, unsigned int * shoulder_sizes, unsigned int shoulders, unsigned int * fp_sizes, unsigned int fps)
+struct tuple2 * wellington(unsigned int const * const f,  unsigned int const * const r, unsigned int const length, unsigned int const * const shoulder_sizes, unsigned int const shoulders, unsigned int const * const fp_sizes, unsigned int const fps)
 {
-	float * scores = calloc(length, sizeof(float));
-	unsigned int * mle = calloc(length, sizeof(unsigned int));
+	float * const scores = calloc(length, sizeof(float));
+	unsigned int * const mle = calloc(length, sizeof(unsigned int));
 	for (unsigned int i = 0; i < shoulders; i++)
 	{
 		unsigned const int shoulder = shoulder_sizes[i];
@@ -212,14 +212,14 @@ struct tuple2 * wellington(unsigned int * f,  unsigned int * r, unsigned int len
 	return retarr;
 }
 
-void add(unsigned int * a, unsigned int * b, int k)
+void add(unsigned int * const a, unsigned int const * const b, int const k)
 {
 	for (int i = 0; i < k; i++) {
 		a[i] += b[i];
 	}
 }
 
-unsigned int slice(unsigned int * arr, int from, int to)
+unsigned int slice(unsigned int * arr, int const from, int const to)
 {
 	unsigned int total = 0;
 	for (unsigned int i = from; i < to; i ++) {
@@ -229,19 +229,18 @@ unsigned int slice(unsigned int * arr, int from, int to)
 
 }
 
-int floatcomp(const void* elem1, const void* elem2)
+int floatcomp(const void * elem1, const void* elem2)
 {
     if(*(const float*)elem1 < *(const float*)elem2)
         return -1;
     return *(const float*)elem1 > *(const float*)elem2;
 }
 
-float percentileofscore(float * N, int size, float score)
+float percentileofscore(float * const N, int const size, float const score)
 {
 	// First, sort the list
 	qsort(N, size, sizeof(float), floatcomp);
 	int count = 0;
-
 
 	for (int i = 0; i < size; i++) {
 		if(score >= N[i])
@@ -259,7 +258,7 @@ float percentileofscore(float * N, int size, float score)
 
 
 
-void shuffle(unsigned int *array, size_t n)
+void shuffle(unsigned int * const array, const size_t n)
 {
     struct timeval tv;
     gettimeofday(&tv, NULL);
@@ -278,16 +277,16 @@ void shuffle(unsigned int *array, size_t n)
 
 
 
-struct tuple2 * diff_wellington(unsigned int * f,  unsigned int * r, unsigned int * f2,  unsigned int * r2, unsigned int length, unsigned int * offsets, unsigned int * widths, unsigned int num_offsets, float threshold)
+struct tuple2 * diff_wellington(unsigned int const * const f,  unsigned int const * const r, unsigned int const * const f2,  unsigned int const * const r2, unsigned int const length, unsigned int const * const offsets, unsigned int const * const widths, unsigned int const num_offsets, float const threshold)
 {
 	unsigned short int shoulder = 35;
-	float * scores = calloc(length, sizeof(float));
+	float * const scores = calloc(length, sizeof(float));
 	for(int i = 0; i < length; i ++)
 	{
-	    scores[i] = 100.0;
+	    scores[i] = 101.0;
 	}
 	//memset(scores,100.0,length)
-	unsigned int * mle = calloc(length, sizeof(unsigned int));
+	unsigned int * const mle = calloc(length, sizeof(unsigned int));
 
 	// Let's just deal with one shoulder for the moment
 	//	unsigned int * const f_bindingArray = rolling_window(f,shoulder, length);
@@ -299,8 +298,8 @@ struct tuple2 * diff_wellington(unsigned int * f,  unsigned int * r, unsigned in
 	for (unsigned int i = 0; i < num_offsets; i++)
 	{
 		//Now we know the offset!
-		unsigned int offset = offsets[i];
-		unsigned int width = widths[i];
+		unsigned const int offset = offsets[i];
+		unsigned const int width = widths[i];
 
 		//Now we have the offset and the widths, let's search around the footprint size
 		for (unsigned int fp_size = width-2; fp_size <= width + 2; fp_size += 2 )
@@ -308,10 +307,11 @@ struct tuple2 * diff_wellington(unsigned int * f,  unsigned int * r, unsigned in
 			unsigned int halffpround = (fp_size/2);
 
 			shoulder = 35 - halffpround;
+			const int samples = 1000;
 
 			//Here we need the reference values forthe reads
-			unsigned int * t_f =  calloc(sizeof(unsigned int) , (shoulder + shoulder + fp_size));
-			unsigned int * t_r =  calloc(sizeof(unsigned int) , (shoulder + shoulder + fp_size));
+			unsigned int * const t_f =  calloc(sizeof(unsigned int) , (shoulder + shoulder + fp_size));
+			unsigned int * const t_r =  calloc(sizeof(unsigned int) , (shoulder + shoulder + fp_size));
 			memcpy(t_f, f + offset - halffpround - shoulder, (shoulder + shoulder + fp_size) * sizeof(unsigned int));
 			memcpy(t_r, r + offset - halffpround - shoulder, (shoulder + shoulder + fp_size) * sizeof(unsigned int));
 
@@ -338,8 +338,8 @@ struct tuple2 * diff_wellington(unsigned int * f,  unsigned int * r, unsigned in
 			//Move the window left and right
 			for (unsigned int centre = offset -3; centre <= offset +3 ; centre++)
 			{
-				unsigned int * t_f2 =  calloc(sizeof(unsigned int) , (shoulder + shoulder + fp_size));
-				unsigned int * t_r2 =  calloc(sizeof(unsigned int) , (shoulder + shoulder + fp_size));
+				unsigned int * const t_f2 =  calloc(sizeof(unsigned int) , (shoulder + shoulder + fp_size));
+				unsigned int * const t_r2 =  calloc(sizeof(unsigned int) , (shoulder + shoulder + fp_size));
 
 				memcpy(t_f2, f2 + centre - halffpround - shoulder, (shoulder + shoulder + fp_size) * sizeof(unsigned int));
 				memcpy(t_r2, r2 + centre - halffpround - shoulder, (shoulder + shoulder + fp_size) * sizeof(unsigned int));
@@ -356,10 +356,9 @@ struct tuple2 * diff_wellington(unsigned int * f,  unsigned int * r, unsigned in
 				float prior_score;
 				if (xForward > 0 & xBackward > 0)
 				{
-					float const p = (float)shoulder / (shoulder + fp_size);
+					const float p = (float)shoulder / (shoulder + fp_size);
 					prior_score = bdtrc(xForward - 1, nForward, p) + bdtrc(xBackward - 1, nBackward, p);
 				}
-                int samples = 1000;
 
 				float * bootstrap_score = calloc(samples, sizeof(float));
 
@@ -384,7 +383,7 @@ struct tuple2 * diff_wellington(unsigned int * f,  unsigned int * r, unsigned in
 					}
 
 				}
-				float score = percentileofscore(bootstrap_score, samples, prior_score);
+				const float score = percentileofscore(bootstrap_score, samples, prior_score);
 				if(score < scores[offset])
 				{
 					scores[offset] = score;
@@ -402,7 +401,7 @@ struct tuple2 * diff_wellington(unsigned int * f,  unsigned int * r, unsigned in
 	}
 	for(int i = 0; i < length; i ++)
 	{
-	    if(scores[i] == 100.0)
+	    if(scores[i] == 101.0)
 	    {
 			scores[i] = 0.0;
 	    }
