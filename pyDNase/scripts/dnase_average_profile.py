@@ -30,12 +30,15 @@ parser.add_argument("-w", "--window_size", help="Size of flanking area around ce
 parser.add_argument("-i",action="store_true", help="Ignores any strand information in BED file and plots data relative to reference strand",default=False)
 parser.add_argument("-c",action="store_true", help="Combine the strand information into one graph",default=False)
 parser.add_argument("-n",action="store_true", help="Normalise cut counts to a fraction peaks",default=False)
+parser.add_argument("-b",action="store_true", help="Normalise for cutting bias",default=False)
 parser.add_argument("regions", help="BED file of the regions you want to generate the average profile for")
 parser.add_argument("reads", help="The BAM file containing the DNase-seq data")
 parser.add_argument("output", help="filename to write the output to")
 args  = parser.parse_args()
 
 reads   = pyDNase.BAMHandler(args.reads)
+if args.b:
+    freads   = pyDNase.BAMHandlerWithBias(pyDNase.FASTAHandler(),args.reads)
 regions = pyDNase.GenomicIntervalSet(args.regions)
 
 #Set all strands to positive if "ignore strands" is enabled
@@ -51,8 +54,12 @@ rv = []
 puts("Reading Data from BAM file...")
 for each in progress.bar(regions):
     if sum(reads[each]["+"]) and sum(reads[each]["-"]):
-        fw.append(reads[each]["+"])
-        rv.append(reads[each]["-"])
+        if args.b:
+            fw.append(np.divide(reads[each]["+"],freads[each]["+"]))
+            rv.append(np.divide(reads[each]["-"],freads[each]["-"]))
+        else:
+            fw.append(reads[each]["+"])
+            rv.append(reads[each]["-"])
 
 if args.n:
     fw = [map(float,i)for i in fw]
