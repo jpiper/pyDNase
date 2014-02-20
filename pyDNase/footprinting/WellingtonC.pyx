@@ -102,13 +102,13 @@ def calculate(FDR, list forwardArray, list backwardArray, footprint_sizes, shoul
         random.shuffle(forwardArray)
         random.shuffle(backwardArray)
 
-    cdef unsigned asize = len(forwardArray)
+    cdef unsigned int asize = len(forwardArray)
 
     #Copy the forward and reverse reads and the shoulder and fp sizes into the C arrays
-    cdef unsigned int *farr  = <unsigned int *> malloc(asize * sizeof(unsigned int))
-    cdef unsigned int *rarr  = <unsigned int *> malloc(asize * sizeof(unsigned int))
-    cdef unsigned int *shsize  = <unsigned int *> malloc(len(shoulder_sizes) * sizeof(unsigned int))
-    cdef unsigned int *fpsize  = <unsigned int *> malloc(len(footprint_sizes) * sizeof(unsigned int))
+    cdef unsigned int * farr  = <unsigned int *> malloc(asize * sizeof(unsigned int))
+    cdef unsigned int * rarr  = <unsigned int *> malloc(asize * sizeof(unsigned int))
+    cdef unsigned int * shsize  = <unsigned int *> malloc(len(shoulder_sizes) * sizeof(unsigned int))
+    cdef unsigned int * fpsize  = <unsigned int *> malloc(len(footprint_sizes) * sizeof(unsigned int))
     for k in range(asize):
         farr[k] = forwardArray[k]
         rarr[k] = backwardArray[k]
@@ -125,11 +125,12 @@ def calculate(FDR, list forwardArray, list backwardArray, footprint_sizes, shoul
     cdef list m,f
     m, f  = [], []
     cdef unsigned int j
+    cdef int minlimit = -1000
     for j in range(asize):
         if bonferroni_factor:
             f.append(min(0,test.fpscores[j] - bonferroni_factor))
         else:
-            f.append(test.fpscores[j])
+            f.append(max(test.fpscores[j],minlimit))
         m.append(int(test.mles[j]))
 
     #Clean everything up
@@ -143,4 +144,3 @@ def calculate(FDR, list forwardArray, list backwardArray, footprint_sizes, shoul
 
     #Return the Scores and the FP parameters
     return(f,m)
-
