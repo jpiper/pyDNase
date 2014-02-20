@@ -502,6 +502,8 @@ class FASTAHandler(object):
     def sequence(self,interval):
         sequence_string = self.ffile.fetch(interval.chromosome,interval.startbp,interval.endbp).upper()
         if not self.conn:
+          #  if interval.strand != "+":
+           #     sequence_string = sequence_string[::-1]
             return str(sequence_string)
         else:
             query_string = "SELECT chr, pos - ? - 1 as offset,ref,mut FROM SNPS WHERE chr=? and pos BETWEEN ? and ?"
@@ -551,8 +553,8 @@ class BAMHandlerWithBias(BAMHandler):
         bias_values = self.bias_data.bias(self.sequence_data.sequence(interval))
         interval.startbp += 3
         interval.endbp   -= 3
-        bias_values["+"] = bias_values["+"][:-1]
-        bias_values["-"] = bias_values["-"][1:]
+        bias_values["+"] = bias_values["+"][1:]
+        bias_values["-"] = bias_values["-"][:-1]
         cuts = self.get_cut_values(interval)
 
         #Nomenclature used below is that in the He. et al Nature Methods Paper
@@ -577,6 +579,8 @@ class BAMHandlerWithBias(BAMHandler):
             #For each base
             for num, val in enumerate(predicted_cuts[dir]):
                 #Divide the number of observed cuts by the bias value
-                predicted_cuts[dir][num] = (cuts[dir][num] + 1.0)  / (val + 1.0)
-
+                pass
+                #predicted_cuts[dir][num] = (cuts[dir][num] + 1.0)  / (val + 1.0)
+        if interval.strand == "-":
+            predicted_cuts["+"], predicted_cuts["-"] = predicted_cuts["-"][::-1], predicted_cuts["+"][::-1]
         return predicted_cuts
