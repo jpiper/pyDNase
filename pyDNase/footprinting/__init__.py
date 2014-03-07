@@ -82,7 +82,7 @@ class wellington(object):
             return self.storedscore
 
     def FDRscore(self):
-        return WellingtonC.percentile([a for a in self.calculate(FDR=1)[0] for i in range(self.FDR_iterations)],self.FDR_cutoff)
+        return WellingtonC.percentile(sum([self.calculate(FDR=1)[0] for i in range(self.FDR_iterations)],[]),self.FDR_cutoff)
 
 
     def footprints(self, withCutoff=-30, merge = 1):
