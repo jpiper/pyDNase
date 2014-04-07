@@ -191,7 +191,7 @@ class BAMHandler(object):
 
         cuts = self["{0},{1},{2},{3}".format(interval.chromosome,interval.startbp-bgsize,interval.endbp+bgsize,interval.strand)]
         forwardArray, backwardArray     = cuts["+"], cuts["-"]
-        cutArray     = (forwardArray + backwardArray)
+        cutArray     = [forwardArray[i] + backwardArray[i] for i in range(len(forwardArray))]
 
         leftReads   = float(sum(cutArray[:bgsize]))
         centreReads = float(sum(cutArray[bgsize:-bgsize]))
