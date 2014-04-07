@@ -306,7 +306,7 @@ struct tuple2 * diff_wellington(unsigned int const * const f,  unsigned int cons
 		{
 			unsigned int halffpround = (fp_size/2);
 
-			shoulder = 35 - halffpround;
+			//shoulder = 35 - halffpround;
 			const int samples = 1000;
 
 			//Here we need the reference values forthe reads
@@ -394,8 +394,8 @@ struct tuple2 * diff_wellington(unsigned int const * const f,  unsigned int cons
 			    free(t_r2);
 			}
 			}
-		free(t_f);
-		free(t_r);
+		    free(t_f);
+		    free(t_r);
 		}
 
 	}
