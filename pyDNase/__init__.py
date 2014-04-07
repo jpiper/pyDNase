@@ -410,7 +410,8 @@ class GenomicIntervalSet(object):
         Args:
             toSize: an int of the size to resize all intervals to
         """
-        assert type(toSize) is int, "Can only resize intervals to integers"
+        if not type(toSize) == int:
+            ValueError("Can only resize intervals to integers")
 
         for i in self:
             xamount = toSize-(i.endbp-i.startbp)//2
