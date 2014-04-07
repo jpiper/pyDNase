@@ -1,6 +1,5 @@
 import math
 cimport cython
-from itertools import tee
 from libc.stdlib cimport malloc, free
 import random
 
@@ -21,7 +20,7 @@ def logcdf(a,b,c):
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.nonecheck(False)
-cpdef percentile(list N, float percent):
+cpdef float percentile(list N, float percent):
     """
     Find the percentile of a list of values.
 
@@ -95,12 +94,16 @@ def diff_calculate(list forwardArray, list backwardArray,list forwardArray2, bac
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.nonecheck(False)
-def calculate(FDR, list forwardArray, list backwardArray, footprint_sizes, shoulder_sizes, bonferroni_factor):
+def calculate(FDR, list forwardArray_in, list backwardArray_in, footprint_sizes, shoulder_sizes, bonferroni_factor):
 
     #If we're looking for an FDR, shuffle the data here.
+
     if FDR:
+        forwardArray, backwardArray = forwardArray_in[:], backwardArray_in[:]
         random.shuffle(forwardArray)
         random.shuffle(backwardArray)
+    else:
+        forwardArray, backwardArray = forwardArray_in, backwardArray_in
 
     cdef unsigned int asize = len(forwardArray)
 
