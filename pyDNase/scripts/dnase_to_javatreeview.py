@@ -15,7 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import argparse, pyDNase, csv
+import argparse, pyDNase, csv, random
 import numpy as np
 from clint.textui import puts, progress
 import warnings
@@ -27,6 +27,7 @@ parser.add_argument("-o",action="store_true", help="Orders output the same as th
 parser.add_argument("-a",action="store_true", help="Write absolute cut counts instead strand imbalanced counts",default=False)
 parser.add_argument("-n",action="store_true", help="Normalise the cut data for each region between 0 and 1",default=False)
 parser.add_argument("-c",action="store_true", help="Disable memory caching (low RAM mode)",default=False)
+parser.add_argument("-r",action="store_true", help="Randomise the ordering of the output",default=False)
 parser.add_argument("regions", help="BED file of the regions you want to generate the heatmap for")
 parser.add_argument("reads", help="The BAM file containing the read data")
 parser.add_argument("output", help="filename to write the CSV output to")
@@ -67,7 +68,15 @@ def normalise_cuts(cuts):
     return normalised_cuts
 
 puts("Writing to JTV...")
-for i in progress.bar(sorted(regions, key = sorter)):
+
+if args.r:
+    # This is done instead of using a random key to sorted() as it is O(n), whereas sorted() is O(n log n)
+    region_iterator = [i for i in regions]
+    random.shuffle(region_iterator)
+else:
+    region_iterator = sorted(regions, key = sorter)
+
+for i in progress.bar(region_iterator):
     cuts = reads[i]
     if args.a:
         newarray = np.add(cuts["+"], cuts["-"])
