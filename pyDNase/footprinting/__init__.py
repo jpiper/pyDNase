@@ -92,29 +92,39 @@ class wellington(object):
         #This find the positions of all the ranges below the cutoff using reads new method
         ranges = []
         tempMLE, templogProb = np.array(self.lengths), np.array(self.scores)
-        templogProbmin = templogProb.min()
-        while templogProbmin < withCutoff:
+
+        #Here we have some different logic for selecting the summits of footprints
+        #TODO: Document this part
+
+        while templogProb.min() < withCutoff:
             minimapos = templogProb.argmin()
             minimafplen = tempMLE[minimapos]
             minimaphalffplen = int(minimafplen)/2
-            lbound = max(minimapos-minimaphalffplen,0)
-            rbound = min(minimapos+minimaphalffplen,len(templogProb))
-            ranges.append((lbound,rbound,templogProbmin))
-            templogProb[lbound:rbound] = 1
-            tempMLE[lbound:rbound] = 1
-            templogProbmin = templogProb.min()
+            lbound = max(minimapos-(minimaphalffplen),0)
+            rbound = min(minimapos+(minimaphalffplen),len(templogProb))
+            ranges.append((lbound,rbound,templogProb.min(),minimafplen))
+            templogProb[max(lbound-minimafplen,0):min(rbound+minimafplen,len(templogProb))] = 1
+
+
         returnSet = pyDNase.GenomicIntervalSet()
         #Merges overlapping ranges (TODO: documentation)
         if ranges:
+            # This change here changes the way we merge footprints from the probability trace
+            #TODO: Documentation
             if merge:
-                ranges = sorted(ranges)
-                merged_ranges = [ranges[0]]
-                for c, d, e in ranges[1:]:
-                    a, b, f = merged_ranges[-1]
-                    if c<=b<d:
-                        merged_ranges[-1] = a, d , min(e,f)
-                    elif b<c<d:
-                        merged_ranges.append((c,d,e))
+                merged_ranges = []
+                while len(ranges):
+                    #Find best score
+                    sorted(ranges,key=lambda x:-x[2])
+                    #Take the last value
+                    best = ranges.pop()
+                    merged_ranges.append(best)
+                    #Check for overlapping regions and remove
+                    new_ranges = []
+                    for c, d, e, f in ranges:
+                        if not c<=best[1]<=d:
+                            new_ranges.append([c, d, e,f])
+                    ranges = new_ranges
             else:
                 merged_ranges = ranges
             #Creates reads GenomicIntervalSet and adds the footprints to them
@@ -143,7 +153,6 @@ class wellington1D(wellington):
 
         #Empty list of lists for storing the footprint scores
         log_probs       = [[] for i in range(len(cutArray))]
-        #
 
         for shoulder_size in self.shoulder_sizes:
             #This computes the background cut  sums for the specified shoulder_size for all basepairs
