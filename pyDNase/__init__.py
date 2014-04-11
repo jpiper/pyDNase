@@ -186,7 +186,7 @@ class BAMHandler(object):
             bgsize (int): The size of the flanking region to use when calculating the FOS (default: 35)
 
         Returns:
-            A float with the FOS - returns 10000 if it can't calculate it
+            A float with the FOS - returns -1 if it can't calculate it
         """
 
         cuts = self["{0},{1},{2},{3}".format(interval.chromosome,interval.startbp-bgsize,interval.endbp+bgsize,interval.strand)]
@@ -198,10 +198,10 @@ class BAMHandler(object):
         rightReads  = float(sum(cutArray[-bgsize:]))
 
         try:
-            return ( (centreReads+1) / leftReads ) + ( (centreReads+1)/rightReads)
+            return ( (centreReads+1.0) / (leftReads + 1.0) ) + ( (centreReads+1.0)/(rightReads + 1.0))
         except BaseException:
-            #If it can't calculate the score, return an arbitrarily large number
-            return 10000
+            #If it can't calculate the score, return a sentinel value
+            return -1
 
 
 class GenomicIntervalSet(object):
