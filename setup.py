@@ -7,11 +7,6 @@ current_version = imp.load_source('lol', 'pyDNase/_version.py').__version__
 #as pip is bad at installing numpy and scipy at the same time, and just breaks
 
 try:
-    import numpy
-except ImportError:
-    raise ImportError("Due to a quirk with pip, pyDNase requires numpy to be installed before starting setup")
-    
-try:
     from setuptools import setup, Extension
 except ImportError:
     from distutils.core import setup
