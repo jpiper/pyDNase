@@ -12,9 +12,9 @@ cdef extern from "WellingtonC.h":
     tuple2 * wellington(unsigned int *, unsigned int *, unsigned int,unsigned int *, unsigned int,unsigned int *, unsigned int)
     tuple2 * diff_wellington(unsigned int * f,  unsigned int * r, unsigned int * f2,  unsigned int * r2, unsigned int length, unsigned int * offsets, unsigned int * widths, unsigned int num_offsets,float threshold)
 
-def logsf(a,b,c):
+cdef float logsf(int a,int b,float c):
     return bdtrc(a, b, c)
-def logcdf(a,b,c):
+cdef float logcdf(int a,int b,float c):
     return bdtr(a,b,c)
 
 @cython.boundscheck(False)
@@ -49,7 +49,7 @@ cpdef float percentile(list N, float percent):
 @cython.wraparound(False)
 @cython.nonecheck(False)
 def diff_calculate(list forwardArray, list backwardArray,list forwardArray2, backwardArray2, footprint_sizes, offset_positions,float threshold):
-    cdef unsigned asize = len(forwardArray)
+    cdef unsigned int asize = len(forwardArray)
     cdef unsigned int *farr  = <unsigned int *> malloc(asize * sizeof(unsigned int))
     cdef unsigned int *rarr  = <unsigned int *> malloc(asize * sizeof(unsigned int))
     cdef unsigned int *farr2  = <unsigned int *> malloc(asize * sizeof(unsigned int))
