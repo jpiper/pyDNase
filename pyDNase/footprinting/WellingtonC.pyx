@@ -2,6 +2,9 @@ import math
 cimport cython
 from libc.stdlib cimport malloc, free
 import random
+import matplotlib.pyplot as plt
+from scipy.stats import percentileofscore as pct
+random.seed("Congratulations on reading the source code - you win a prize!")
 
 cdef extern from "WellingtonC.h":
     struct tuple2:
@@ -43,6 +46,82 @@ cpdef float percentile(list N, float percent):
     d1 = N[c] * (k-f)
     return d0+d1
 
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+@cython.nonecheck(False)
+def markus_diff_calculate(list forwardArray, list backwardArray,list forwardArray2, list backwardArray2, list footprint_sizes, list offset_positions,float threshold,plotting =0):
+    cdef unsigned int asize = len(forwardArray)
+    fp_scores = [101] * asize
+    fp_mles = [0] * asize
+    cdef unsigned int shoulder_size = 35
+    cdef unsigned int centre,fp_size,mle,offset
+
+    for offset, mle in zip(offset_positions,footprint_sizes):
+        for fp_size in [mle]:# range(mle-2,mle+4,2): #[mle]:
+            halffpround = int((fp_size)/2)
+            for centre in [offset]:# range(offset-2,offset+4,2):
+
+                mini_array_f  = forwardArray[centre-halffpround-shoulder_size:centre+halffpround+shoulder_size]
+                mini_array_r  = backwardArray[centre-halffpround-shoulder_size:centre+halffpround+shoulder_size]
+
+                mini_array_f2 = forwardArray2[centre-halffpround-shoulder_size:centre+halffpround+shoulder_size]
+                mini_array_r2 = backwardArray2[centre-halffpround-shoulder_size:centre+halffpround+shoulder_size]
+
+                Forward = sum(mini_array_f[:shoulder_size])
+                cForward = sum(mini_array_f[shoulder_size:shoulder_size+fp_size])
+                cBackward = sum(mini_array_r[shoulder_size:shoulder_size+fp_size])
+                Backward = sum(mini_array_r[shoulder_size+fp_size:shoulder_size+shoulder_size+fp_size])
+
+                #This calculates the FOS score
+                t_score = (((cForward+1.0)/(fp_size *1.0)) / (Forward+1.0/(shoulder_size *1.0))) + ((cBackward+1.0/(fp_size *1.0))/(Backward+1.0/(shoulder_size *1.0)))
+
+                scores = []
+                #Now let's randomly swap shit around
+                for bootstrap_iteration in range(10000):
+                    decision_vector_f = [random.randrange(2) for i in mini_array_f]
+                    decision_vector_r = [random.randrange(2) for i in mini_array_r]
+
+                    newvec_f = []
+                    newvec_r = []
+                    for pos, value in enumerate(decision_vector_f):
+                        if value == 0:
+                            newvec_f.append(mini_array_f[pos])
+                        else:
+                            newvec_f.append(mini_array_f2[pos])
+                    for pos, value in enumerate(decision_vector_r):
+                        if value == 0:
+                            newvec_r.append(mini_array_r[pos])
+                        else:
+                            newvec_r.append(mini_array_r2[pos])
+
+                    #Now let's calculate the footprint score
+                    Forward2  =  sum(newvec_f[:shoulder_size])
+                    cForward2  = sum(newvec_f[shoulder_size:shoulder_size+fp_size])
+                    cBackward2 = sum(newvec_r[shoulder_size:shoulder_size+fp_size])
+                    Backward2 =  sum(newvec_r[shoulder_size+fp_size:shoulder_size+shoulder_size+fp_size])
+                    #Calculate the FOS score
+                    t_score2 = (((cForward2+1.0)/(fp_size *1.0)) / (Forward2+1.0/(shoulder_size *1.0))) + ((cBackward2+1.0/(fp_size *1.0))/(Backward2+1.0/(shoulder_size *1.0)))
+                    scores.append(t_score2)
+                if plotting:
+                    plt.show()
+                    plt.clf()
+                    plt.axvline(t_score)
+                    plt.hist(scores)
+                    plt.title("Score : {}".format(pct(scores,t_score)))
+                    plt.show()
+                score = pct(scores,t_score)
+                if score < fp_scores[offset]:
+                    fp_scores[offset] = score
+                    fp_mles[mle] = mle
+
+
+    print fp_scores
+    for pos, value in enumerate(fp_scores):
+        if value == 101:
+            fp_scores[pos] = 0
+
+    return fp_scores, fp_mles
 
 
 @cython.boundscheck(False)
