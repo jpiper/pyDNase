@@ -197,6 +197,11 @@ class BAMHandler(object):
         centreReads = float(sum(cutArray[bgsize:-bgsize]))
         rightReads  = float(sum(cutArray[-bgsize:]))
 
+        #Here we normalise by region length
+        leftReads   /= (bgsize * 1.0)
+        centreReads /= (len(interval) * 1.0)
+        rightReads  /= (bgsize * 1.0)
+
         try:
             return ( (centreReads+1.0) / (leftReads + 1.0) ) + ( (centreReads+1.0)/(rightReads + 1.0))
         except BaseException:
