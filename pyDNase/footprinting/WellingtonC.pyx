@@ -1,5 +1,6 @@
 import math
 cimport cython
+from libc.math cimport ceil
 from libc.stdlib cimport malloc, free
 import random
 import matplotlib.pyplot as plt
@@ -38,8 +39,8 @@ cpdef float percentile(list N, float percent):
         return None
     N = sorted(N)
     k = (len(N)-1) * percent
-    f = math.floor(k)
-    c = math.ceil(k)
+    f = <int>k
+    c = <int>ceil(k)
     if f == c:
         return float(N[int(k)])
     d0 = N[f] * (c-k)
