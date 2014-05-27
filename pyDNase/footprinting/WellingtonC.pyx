@@ -53,7 +53,7 @@ cpdef float percentile(list N, float percent):
 @cython.nonecheck(False)
 def markus_diff_calculate(list forwardArray, list backwardArray,list forwardArray2, list backwardArray2, list footprint_sizes, list offset_positions,float threshold,plotting =0):
     cdef unsigned int asize = len(forwardArray)
-    fp_scores = [101] * asize
+    fp_scores = [1] * asize
     fp_mles = [0] * asize
     cdef unsigned int shoulder_size = 35
     cdef unsigned int centre,fp_size,mle,offset
@@ -112,22 +112,24 @@ def markus_diff_calculate(list forwardArray, list backwardArray,list forwardArra
                     #t_score2 = (((cForward2+1.0)/(fp_size *1.0)) / (Forward2+1.0/(shoulder_size *1.0))) + ((cBackward2+1.0/(fp_size *1.0))/(Backward2+1.0/(shoulder_size *1.0)))
                     t_score2 = (Forward2 + Backward2) / float((Forward2 + Backward2 + cCombined2))
                     scores.append(t_score2)
+                MSCORE=sum([t_score < i for i in scores]) / float(10000)
                 if plotting:
                     plt.clf()
                     plt.axvline(t_score)
                     plt.hist(scores)
-                    plt.title("Score : {}".format(pct(scores,t_score)))
+
+                    plt.title("Score : {} MSCORE: {}".format(pct(scores,t_score),MSCORE))
                     plt.show()
-                score = pct(scores,t_score)
-                if score < fp_scores[offset]:
-                    fp_scores[offset] = score
-                    fp_mles[mle] = mle
+                # score = pct(scores,t_score)
+                # if score < fp_scores[offset]:
+                fp_scores[offset] = MSCORE
+                fp_mles[mle] = mle
 
 
-    print fp_scores
-    for pos, value in enumerate(fp_scores):
-        if value == 101:
-            fp_scores[pos] = 0
+    # print fp_scores
+    # for pos, value in enumerate(fp_scores):
+    #     if value == 101:
+    #         fp_scores[pos] = 0
 
     return fp_scores, fp_mles
 
