@@ -302,8 +302,9 @@ struct tuple2 * diff_wellington(unsigned int const * const f,  unsigned int cons
 		unsigned const int width = widths[i];
 
 		//Now we have the offset and the widths, let's search around the footprint size
-		for (unsigned int fp_size = width-2; fp_size <= width + 2; fp_size += 2 )
-		{
+		//for (unsigned int fp_size = width-2; fp_size <= width + 2; fp_size += 2 )
+		//{
+		    unsigned int fp_size = width;
 			unsigned int halffpround = (fp_size/2);
 
 			//shoulder = 35 - halffpround;
@@ -336,8 +337,11 @@ struct tuple2 * diff_wellington(unsigned int const * const f,  unsigned int cons
             if(t_score < threshold)
             {
 			//Move the window left and right
-			for (unsigned int centre = offset -3; centre <= offset +3 ; centre++)
-			{
+			//for (unsigned int centre = offset -3; centre <= offset +3 ; centre++)
+			//{
+
+			    unsigned int centre = offset;
+
 				unsigned int * const t_f2 =  calloc(sizeof(unsigned int) , (shoulder + shoulder + fp_size));
 				unsigned int * const t_r2 =  calloc(sizeof(unsigned int) , (shoulder + shoulder + fp_size));
 
@@ -392,11 +396,11 @@ struct tuple2 * diff_wellington(unsigned int const * const f,  unsigned int cons
 				free(bootstrap_score);
 			    free(t_f2);
 			    free(t_r2);
-			}
+			//}
 			}
 		    free(t_f);
 		    free(t_r);
-		}
+		//}
 
 	}
 	for(int i = 0; i < length; i ++)
