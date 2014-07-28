@@ -1,10 +1,7 @@
-import math
 cimport cython
 from libc.math cimport ceil
 from libc.stdlib cimport malloc, free
 import random
-import matplotlib.pyplot as plt
-from scipy.stats import percentileofscore as pct
 random.seed("Congratulations on reading the source code - you win a prize!")
 
 cdef extern from "WellingtonC.h":
@@ -46,93 +43,6 @@ cpdef float percentile(list N, float percent):
     d0 = N[f] * (c-k)
     d1 = N[c] * (k-f)
     return d0+d1
-
-
-@cython.boundscheck(False)
-@cython.wraparound(False)
-@cython.nonecheck(False)
-def markus_diff_calculate(list forwardArray, list backwardArray,list forwardArray2, list backwardArray2, list footprint_sizes, list offset_positions,float threshold,plotting =0):
-    cdef unsigned int asize = len(forwardArray)
-    fp_scores = [1] * asize
-    fp_mles = [0] * asize
-    cdef unsigned int shoulder_size = 35
-    cdef unsigned int centre,fp_size,mle,offset
-
-    for offset, mle in zip(offset_positions,footprint_sizes):
-        # I've commented out the expanding and wobbling for now!
-        for fp_size in [mle]:# range(mle-2,mle+4,2): #[mle]:
-            halffpround = int((fp_size)/2)
-            for centre in [offset]:# range(offset-2,offset+4,2):
-
-                mini_array_f  = forwardArray[centre-halffpround-shoulder_size:centre+halffpround+shoulder_size]
-                mini_array_r  = backwardArray[centre-halffpround-shoulder_size:centre+halffpround+shoulder_size]
-
-                mini_array_f2 = forwardArray2[centre-halffpround-shoulder_size:centre+halffpround+shoulder_size]
-                mini_array_r2 = backwardArray2[centre-halffpround-shoulder_size:centre+halffpround+shoulder_size]
-
-                Forward   = sum(mini_array_f[:shoulder_size])
-                cForward  = sum(mini_array_f[shoulder_size:shoulder_size+fp_size])
-                cBackward = sum(mini_array_r[shoulder_size:shoulder_size+fp_size])
-                Backward  = sum(mini_array_r[shoulder_size+fp_size:shoulder_size+shoulder_size+fp_size])
-
-                #This calculates the FOS score
-                #t_score = (((cForward+1.0)/(fp_size *1.0)) / (Forward+1.0/(shoulder_size *1.0))) + ((cBackward+1.0/(fp_size *1.0))/(Backward+1.0/(shoulder_size *1.0)))
-
-                #Note: we're going with Markus' idea here. Not sure how good this will be :/
-                t_score = (Forward + Backward) / float((Forward + Backward + cForward + cBackward))
-
-                scores = []
-                #Now let's randomly swap shit around
-                for bootstrap_iteration in range(10000):
-                    decision_vector = [random.randrange(2) for i in mini_array_f]
-
-                    newvec_f = []
-                    newvec_r = []
-                    newvec_c = []
-                    for pos, value in enumerate(decision_vector):
-                        if value == 0:
-                            newvec_f.append(mini_array_f[pos])
-                            newvec_r.append(mini_array_r[pos])
-                            newvec_c.append(mini_array_f[pos] + mini_array_r[pos])
-                        else:
-                            newvec_f.append(mini_array_f2[pos])
-                            newvec_r.append(mini_array_r2[pos])
-                            newvec_c.append(mini_array_f2[pos] + mini_array_r2[pos])
-
-                    #Now let's calculate the footprint score
-
-                    Forward2  =  sum(newvec_f[:shoulder_size])
-                    cForward2  = sum(newvec_f[shoulder_size:shoulder_size+fp_size])
-                    cBackward2 = sum(newvec_r[shoulder_size:shoulder_size+fp_size])
-
-                    cCombined2 =  sum(newvec_c[shoulder_size:shoulder_size+fp_size])
-
-                    Backward2 =  sum(newvec_r[shoulder_size+fp_size:shoulder_size+shoulder_size+fp_size])
-                    #Calculate the FOS score
-                    #t_score2 = (((cForward2+1.0)/(fp_size *1.0)) / (Forward2+1.0/(shoulder_size *1.0))) + ((cBackward2+1.0/(fp_size *1.0))/(Backward2+1.0/(shoulder_size *1.0)))
-                    t_score2 = (Forward2 + Backward2) / float((Forward2 + Backward2 + cCombined2))
-                    scores.append(t_score2)
-                MSCORE=sum([t_score < i for i in scores]) / float(10000)
-                if plotting:
-                    plt.clf()
-                    plt.axvline(t_score)
-                    plt.hist(scores)
-
-                    plt.title("Score : {} MSCORE: {}".format(pct(scores,t_score),MSCORE))
-                    plt.show()
-                # score = pct(scores,t_score)
-                # if score < fp_scores[offset]:
-                fp_scores[offset] = MSCORE
-                fp_mles[mle] = mle
-
-
-    # print fp_scores
-    # for pos, value in enumerate(fp_scores):
-    #     if value == 101:
-    #         fp_scores[pos] = 0
-
-    return fp_scores, fp_mles
-
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
