@@ -15,6 +15,7 @@ Contents
    intervals
    footprinting
    scripts
+   biascorrecting
    faqs
 
 .. *installation

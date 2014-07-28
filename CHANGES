@@ -1,5 +1,6 @@
 0.2.0 - XXXX-XX-XX
 ==================
+* FEATURE: Preliminary bias correction in dnase_average_profile.py and dnase_to_javatreeview.py
 * ENHANCEMENT: In the interests of performance, `BAMHandler` no longer returns NumPy arrays, just lists.
 * ENHANCEMENT: `wellington_footprints.py` is now multithreaded - performance roughly scales linearly with CPU number
 * ENHANCEMENT: The `Footprinting` module has been refactored to allow for multithreading - those using the Wellington API directly take note of the changes
