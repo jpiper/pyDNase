@@ -491,8 +491,7 @@ class GenomicInterval(object):
         return self.endbp - self.startbp
 
 class FASTAHandler(object):
-    #TODO: Change this so it doesn't automatically use my builtin hg19
-    def __init__(self,fasta_file ="/Users/jasonlozier/Genomics/hg19-bt2.fa",vcf_file = None):
+    def __init__(self, fasta_file, vcf_file = None):
         self.ffile = pysam.Fastafile(fasta_file)
         self.conn = None
         if vcf_file:

@@ -27,6 +27,7 @@ from matplotlib import rcParams
 
 parser = argparse.ArgumentParser(description='Plots average profile of DNase activity surrounding a list of regions in a BED file')
 parser.add_argument("-w", "--window_size", help="Size of flanking area around centre of the regions to plot (default: 100)",default=100,type=int)
+parser.add_argument("-bf", "--bias-file", help="Location of the sorted, index",default = None,type=str)
 parser.add_argument("-i",action="store_true", help="Ignores any strand information in BED file and plots data relative to reference strand",default=False)
 parser.add_argument("-c",action="store_true", help="Combine the strand information into one graph",default=False)
 parser.add_argument("-n",action="store_true", help="Normalise cut counts to a fraction peaks",default=False)
@@ -38,8 +39,13 @@ args  = parser.parse_args()
 
 reads   = pyDNase.BAMHandler(args.reads)
 if args.b:
-    freads   = pyDNase.BAMHandlerWithBias(pyDNase.FASTAHandler(),args.reads)
+    if args.bias_file != None:
+        freads   = pyDNase.BAMHandlerWithBias(pyDNase.FASTAHandler(args.bias_file),args.reads)
+    else:
+        raise ValueError("No FASTA file provided for bias correction!")
 regions = pyDNase.GenomicIntervalSet(args.regions)
+
+
 
 #Set all strands to positive if "ignore strands" is enabled
 if args.i:
@@ -94,5 +100,8 @@ plt.gca().spines['right'].set_visible(False)
 
 plt.gca().tick_params(axis='both', which='major', labelsize=32)
 
-plt.gca().set_ylabel('Average DNase\n Activity',size="36", multialignment='center')
+if args.bias_file:
+    plt.gca().set_ylabel('Average DNase\n Activity',size="36", multialignment='center')
+else:
+    plt.gca().set_ylabel('Average DNase\n Activity',size="36", multialignment='center')
 plt.savefig(args.output,bbox_inches='tight')
