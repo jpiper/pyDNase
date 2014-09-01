@@ -1,9 +1,12 @@
 0.2.0 - XXXX-XX-XX
 ==================
+* FEATURE: Differential Footprinting!
 * FEATURE: Preliminary bias correction in dnase_average_profile.py and dnase_to_javatreeview.py
+* ENHANCEMENT: DNase-seq footprinting tutorial :)
 * ENHANCEMENT: In the interests of performance, `BAMHandler` no longer returns NumPy arrays, just lists.
-* ENHANCEMENT: `wellington_footprints.py` is now multithreaded - performance roughly scales linearly with CPU number
-* ENHANCEMENT: The `Footprinting` module has been refactored to allow for multithreading - those using the Wellington API directly take note of the changes
+* ENHANCEMENT: `wellington_footprints.py` is now multithreaded - performance roughly scales linearly with number of CPUs
+* ENHANCEMENT: The `Footprinting` module has been refactored to allow for multithreading - those using the Wellington API directly take note of the changes.
+* ENHANCEMENT: Somewhere along the way we picked up Travic CI. No more broken builds.
 
 0.1.4 - 2014-01-05
 ==================

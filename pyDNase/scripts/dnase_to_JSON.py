@@ -17,7 +17,7 @@
 
 import argparse, pyDNase
 from clint.textui import puts, progress
-parser = argparse.ArgumentParser(description='Writes a JSON file of DNase I cuts for regions from a  BED file')
+parser = argparse.ArgumentParser(description='Writes a JSON file of DNase I cuts for regions from a BED file')
 parser.add_argument("-w", "--window_size", help="Resize all regions to a specific length",default = 0, type=int)
 parser.add_argument("-i",action="store_true", help="Ignores strand information in BED file",default=False)
 parser.add_argument("regions", help="BED file of the regions")
