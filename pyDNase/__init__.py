@@ -481,7 +481,7 @@ class GenomicInterval(object):
         if label:
             self.label = str(label)
         else:
-            self.label     = "Unnamed{0}".format(self.__class__.counter)
+            self.label = "Unnamed{0}".format(self.__class__.counter)
 
         #This contains anything else you want to store about the interval
         self.metadata = {}
@@ -595,5 +595,6 @@ class BAMHandlerWithBias(BAMHandler):
                 pass
                 #predicted_cuts[dir][num] = (cuts[dir][num] + 1.0)  / (val + 1.0)
         if interval.strand == "-":
+            # That's numberwang, let's rotate the board!
             predicted_cuts["+"], predicted_cuts["-"] = predicted_cuts["-"][::-1], predicted_cuts["+"][::-1]
         return predicted_cuts
