@@ -38,6 +38,7 @@ setup(
     package_data = {'pyDNase':["data/*"]},
     
     scripts=[
+        "pyDNase/scripts/dnase_cut_counter.py",
         "pyDNase/scripts/dnase_average_profile.py",
         "pyDNase/scripts/dnase_to_javatreeview.py",
         "pyDNase/scripts/dnase_wig_tracks.py",

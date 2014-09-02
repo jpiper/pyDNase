@@ -19,13 +19,13 @@ import argparse
 import pyDNase
 from clint.textui import progress, puts
 
-parser = argparse.ArgumentParser(description='Annotates regions with the number of cuts')
-parser.add_argument("regions", help="DHSs in the cell")
-parser.add_argument("reads", help="The BAM file containing the Treatment DNase-seq data")
+parser = argparse.ArgumentParser(description='Annotates a BED file with with the number of DNase cuts in it')
+parser.add_argument("regions", help="BED file")
+parser.add_argument("reads", help="The BAM file containing the DNase-seq data")
 parser.add_argument("output", help="filename to write the output to")
 args  = parser.parse_args()
 
-reads  = pyDNase.BAMHandler(args.reads,caching=0)
+reads  = pyDNase.BAMHandler(args.reads, caching=0)
 regions = pyDNase.GenomicIntervalSet(args.regions)
 ofile = open(args.output,"w")
 
