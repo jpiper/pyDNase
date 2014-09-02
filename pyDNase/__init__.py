@@ -56,12 +56,7 @@ class BAMHandler(object):
             raise IOError(errorString)
 
         #Initialise the empty DNase cut cache with the chromosome names from the BAM file
-        self.cutCache = {}
-        #This helps us differentiate between what's been looked up and when there's just no reads
-        self.lookupCache = {}
-        for i in self.samfile.references:
-            self.cutCache[i]    = {"+":{},"-":{}}
-            self.lookupCache[i] = []
+        self.purge_cache()
         #Do not change the CHUNK_SIZE after object instantiation!
         self.CHUNK_SIZE  = chunkSize
         self.CACHING     = caching
@@ -127,6 +122,19 @@ class BAMHandler(object):
         fwCutArray  = [tempcutf.get(i, 0) for i in range(startbp,endbp)]
         revCutArray = [tempcutr.get(i, 0) for i in range(startbp,endbp)]
         return {"+":fwCutArray,"-":revCutArray}
+
+    def purge_cache(self):
+        """
+        Wipes the internal cache - useful if you need finer grain control over caching.
+        """
+
+        #Initialise the empty DNase cut cache with the chromosome names from the BAM file
+        self.cutCache = {}
+        #This helps us differentiate between what's been looked up and when there's just no reads
+        self.lookupCache = {}
+        for i in self.samfile.references:
+            self.cutCache[i]    = {"+":{},"-":{}}
+            self.lookupCache[i] = []
 
     def get_cut_values(self,vals):
         """Return a dictionary with the cut counts. Can be used in two different ways:
