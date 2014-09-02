@@ -17,4 +17,10 @@ We find the results are almost exactly the same as the `HOTSPOT <http://www.uwen
 
 pyDNase won't install/import or gives weird errors
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-The most common issue here is that you have old versions of the dependencies - namely ``scipy``, ``numpy``, or ``pysam`` installed - try updating these to their latest version.
+The most common issue here is that you have old versions of the dependencies - namely ``scipy``, ``numpy``, or ``pysam`` installed - try updating these to their latest version. pyDNase is built against Python 2.6, 2.7 and 3.0 by the Travis contious integration (CI) system, so we're very confident in the deployability of the codebase.
+
+
+These footprints from are too stringent for my liking
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This is a common question - if you have low read depths you might need to adjust the ``-fdrlimit`` parameter to something less stringent like ``"-10"`` or ``"-5"``, which sets the mimimum amounts of evidence required to support the alternate hypothesis of there being a footprint. You can set this to ``0`` if you want to disable this feature altogether, and then sort the footprints by their Wellington scores (e.g. ``sort -nk 5 <fp.bed> > <out.bed>``) and choose your threshold this way if you like.
