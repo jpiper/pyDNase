@@ -35,10 +35,10 @@ parser.add_argument("reads", help="The BAM file containing the read data")
 parser.add_argument("output", help="filename to write the CSV output to")
 args = parser.parse_args()
 
-reads   = pyDNase.BAMHandler(args.reads)
+reads   = pyDNase.BAMHandler(args.reads,caching= not args.c)
 if args.b:
     if args.bias_file != None:
-        freads   = pyDNase.BAMHandlerWithBias(pyDNase.FASTAHandler(args.bias_file),args.reads)
+        freads   = pyDNase.BAMHandlerWithBias(pyDNase.FASTAHandler(args.bias_file),args.reads,caching= not args.c)
     else:
         raise ValueError("No FASTA file provided for bias correction!")
 regions = pyDNase.GenomicIntervalSet(args.regions)
