@@ -32,7 +32,7 @@ parser.add_argument("reads", help="The BAM file containing the read data")
 parser.add_argument("output", help="filename to write the CSV output to")
 args = parser.parse_args()
 
-reads = pyDNase.BAMHandler(args.reads)
+reads = pyDNase.BAMHandler(args.reads,caching= not args.c)
 regions = pyDNase.GenomicIntervalSet(args.regions)
 
 if args.i:

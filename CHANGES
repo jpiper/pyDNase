@@ -1,3 +1,8 @@
+0.1.7 - 2014-09-03
+==================
+* Fixed bug in dnase_to_javatreeview.py that prevented caching from being disabled
+
+
 0.1.6 - 2014-03-07
 ==================
 * Fixed FDR calculation that was only performing 1 randomisation! Many thanks to @arjanvandervelde
