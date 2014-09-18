@@ -121,7 +121,6 @@ for each in progress.bar(orderedbychr):
 
     #FDR footprints
     fdr = percentile(np.concatenate([fp.calculate(reads,FDR=True, shoulder_sizes = args.shoulder_sizes ,footprint_sizes = args.footprint_sizes, bonferroni = args.bonferroni)[0] for i in range(args.FDR_iterations)]).tolist(),args.FDR_cutoff)
-    print fdr
     if fdr < args.FDR_limit:
         for footprint in fp.footprints(withCutoff=fdr,merge=not args.dont_merge_footprints):
             print >> fdrout, footprint
