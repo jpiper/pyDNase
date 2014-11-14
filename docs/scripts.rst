@@ -88,5 +88,5 @@ So you want to get footprints from your data? No problem. We provide a handy scr
 .. program-output:: python ../pyDNase/scripts/wellington_footprints.py -h
 
 
-.. _JavaTreeView: http://www.org.com
+.. _JavaTreeView: http://jtreeview.sourceforge.net/
 

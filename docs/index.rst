@@ -17,6 +17,7 @@ Contents
    scripts
    biascorrecting
    faqs
+   tutorial
 
 .. *installation
 .. *Querying a BAM File for cut data
