@@ -61,8 +61,11 @@ puts("Reading Data from BAM file...")
 for each in progress.bar(regions):
     if sum(reads[each]["+"]) and sum(reads[each]["-"]):
         if args.b:
-            fw.append(np.divide(reads[each]["+"],freads[each]["+"]))
-            rv.append(np.divide(reads[each]["-"],freads[each]["-"]))
+            try:
+                fw.append(np.divide(reads[each]["+"],freads[each]["+"]))
+                rv.append(np.divide(reads[each]["-"],freads[each]["-"]))
+            except Exception:
+                pass
         else:
             fw.append(reads[each]["+"])
             rv.append(reads[each]["-"])
@@ -81,7 +84,7 @@ else:
 
 #Pad the axis out reads bit
 rcParams['xtick.major.pad'] = 20 
-rcParams['ytick.major.pad'] = 20 
+rcParams['ytick.major.pad'] = 20
 
 #Sort out the X axis ticks
 ticks = [0,args.window_size,args.window_size*2]
@@ -98,10 +101,10 @@ plt.gca().yaxis.set_ticks_position('left')
 plt.gca().spines['top'].set_visible(False)
 plt.gca().spines['right'].set_visible(False)
 
-plt.gca().tick_params(axis='both', which='major', labelsize=32)
+plt.gca().tick_params(axis='both', which='major', labelsize=28, pad=12)
 
 if args.bias_file:
-    plt.gca().set_ylabel('Average DNase\n Activity',size="36", multialignment='center')
+    plt.gca().set_ylabel('Average DNase Activity\n (Observed/Expected)',size="32", multialignment='center')
 else:
-    plt.gca().set_ylabel('Average DNase\n Activity',size="36", multialignment='center')
+    plt.gca().set_ylabel('Average DNase Activity',size="26", multialignment='center')
 plt.savefig(args.output,bbox_inches='tight')
