@@ -43,7 +43,7 @@ outarr = []
 puts("Generating JSON output...")
 for i in progress.bar(sorted(regions, key = lambda x : x.importorder)):
     cuts = reads[i]
-    outarr.append({"location":i.chromosome + ":" + str(i.startbp) + ":" + str(i.endbp), "positive strand cuts":cuts["+"].tolist() , "negative strand cuts":cuts["-"].tolist()})
+    outarr.append({"location":i.chromosome + ":" + str(i.startbp) + ":" + str(i.endbp), "positive strand cuts":cuts["+"] , "negative strand cuts":cuts["-"]})
 puts("Writing JSON to disk...")
 outfile.write(str(outarr))
 outfile.close()
