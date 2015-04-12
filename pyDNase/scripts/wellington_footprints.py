@@ -118,7 +118,7 @@ def multiWellington(regions,reads,**kwargs):
         while p._taskqueue.qsize() > max_regions_cached_in_memory:
             pass
     p.close()
-    puts_err("Waiting for the last {0} jobs to finish".format(max_regions_cached_in_memory))
+    puts_err("Waiting for the last {0} jobs to finish...".format(max_regions_cached_in_memory))
     p.join()
 
 #TODO: Use **args or something similar to pass arguments?
