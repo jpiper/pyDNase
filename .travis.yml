@@ -6,6 +6,7 @@ python:
 before_install:
     - sudo apt-get update -qq
     - sudo apt-get install -qq libopenblas-dev liblapack-dev libatlas-dev
+    - pip install cython
     - pip install numpy
     - pip install coveralls
 install:
