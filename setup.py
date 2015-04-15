@@ -28,11 +28,12 @@ setup(
     ],
 
     install_requires=[
-        # Note - not enforcing versions for numpy, scipy, and matplotlib
-        "numpy", #Tested on >=1.5.0
-        "matplotlib", #Tested on >=1.2
+        # Not enforcing versions for numpy, scipy, and matplotlib as they can be a bitch to upgrade
+        "numpy", # Tested on >=1.5.0
+        "matplotlib", # Tested on >=1.2
         "pysam >= 0.7.5",
         "clint >= 0.3.2",
+        "pybedtools >= 0.6.2",
     ],
     
     package_data = {'pyDNase':["data/*"]},
@@ -46,7 +47,7 @@ setup(
         "pyDNase/scripts/dnase_to_JSON.py",
         "pyDNase/scripts/dnase_ddhs_scorer.py",
         "pyDNase/scripts/examples/example_footprint_scores.py",
-        "pyDNase/scripts/dnase_to_JSON.py"],
-    
+        "pyDNase/scripts/dnase_to_JSON.py",
+        "pyDNase/scripts/dnase_bias_estimator.py"],
     test_suite="test",
 )

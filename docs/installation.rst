@@ -59,7 +59,11 @@ In order to install :mod:`pyDNase`, the following software is required. Most peo
 #. samtools_
     * **On OS X** the simplest way to install samtools_ is using the homebrew_ command ``brew tap homebrew/science`` followed by ``brew install homebrew/science/samtools``.
     * **On Ubuntu** you can use ``sudo apt-get install samtools``
-    
+
+#. bedtools_
+    * **On OS X** the simplest way to install bedtools_ is using the homebrew_ command ``brew tap homebrew/science`` followed by ``brew install homebrew/science/bedtools``.
+    * **On Ubuntu** you can use ``sudo apt-get install bedtools``
+
 #. NumPy_
     * Provided you installed pip_, you should be able to simply run ::
 
@@ -76,7 +80,8 @@ To install, simply ::
 This will attempt to download, compile, and install the python dependencies (``clint``, ``numpy``, ``scipy``, ``pysam``, and ``matplotlib``) automatically. However, due to a myriad of reasons it might not work. If this is the case, go and install these manually in said order, then try ``pip install pyDNase`` once more.
 
 .. _python: http://www.python.org/
-.. _samtools: http://samtools.sourceforge.net/
+.. _samtools: http://www.htslib.org/
+.. _bedtools: http://bedtools.readthedocs.org/en/latest/
 .. _homebrew: http://brew.sh/
 .. _NumPy: http://www.numpy.org/‎
 .. _clint: https://github.com/kennethreitz/clint
