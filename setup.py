@@ -3,9 +3,6 @@ __author__ = 'Jason Piper'
 import imp
 current_version = imp.load_source('lol', 'pyDNase/_version.py').__version__
 
-#Unfortunately, we have to ensure that the user has numpy is installed,
-#as pip is bad at installing numpy and scipy at the same time, and just breaks
-
 try:
     from setuptools import setup, Extension
 except ImportError:
@@ -28,12 +25,11 @@ setup(
     ],
 
     install_requires=[
-        # Not enforcing versions for numpy, scipy, and matplotlib as they can be a bitch to upgrade
+        # Not enforcing versions for numpy and matplotlib as they can be a bitch to upgrade
         "numpy", # Tested on >=1.5.0
         "matplotlib", # Tested on >=1.2
         "pysam >= 0.7.5",
-        "clint >= 0.3.2",
-        "pybedtools >= 0.6.2",
+        "clint >= 0.3.2"
     ],
     
     package_data = {'pyDNase':["data/*"]},

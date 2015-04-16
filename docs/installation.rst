@@ -64,10 +64,14 @@ In order to install :mod:`pyDNase`, the following software is required. Most peo
     * **On OS X** the simplest way to install bedtools_ is using the homebrew_ command ``brew tap homebrew/science`` followed by ``brew install homebrew/science/bedtools``.
     * **On Ubuntu** you can use ``sudo apt-get install bedtools``
 
-#. NumPy_
-    * Provided you installed pip_, you should be able to simply run ::
 
-        $ pip install numpy
+Optional installs
+~~~~~~~~~~~~~~~~~
+
+#. pybedtools_
+    * This is only required if you want to use the ``dnase_bias_estimator.py``. Provided you installed pip_, you should be able to simply run ::
+
+        $ pip install pybedtools
 
 
 Installing :mod:`pyDNase`
@@ -77,8 +81,9 @@ To install, simply ::
 
     $ pip install pyDNase
 
-This will attempt to download, compile, and install the python dependencies (``clint``, ``numpy``, ``scipy``, ``pysam``, and ``matplotlib``) automatically. However, due to a myriad of reasons it might not work. If this is the case, go and install these manually in said order, then try ``pip install pyDNase`` once more.
+This will attempt to download, compile, and install the python dependencies (``clint``, ``numpy``, ``pysam``, and ``matplotlib``) automatically. However, due to a myriad of reasons it might not work. If this is the case, go and install these manually in said order, then try ``pip install pyDNase`` once more.
 
+.. _pybedtools: https://pythonhosted.org/pybedtools/
 .. _python: http://www.python.org/
 .. _samtools: http://www.htslib.org/
 .. _bedtools: http://bedtools.readthedocs.org/en/latest/
