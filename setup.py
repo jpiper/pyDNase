@@ -29,7 +29,7 @@ setup(
         "numpy", # Tested on >=1.5.0
         "matplotlib", # Tested on >=1.2
         "pysam >= 0.7.5",
-        "clint >= 0.3.2"
+        "clint >= 0.3.2",
     ],
     
     package_data = {'pyDNase':["data/*"]},
