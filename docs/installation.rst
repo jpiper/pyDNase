@@ -51,11 +51,6 @@ In order to install :mod:`pyDNase`, the following software is required. Most peo
 
             $ curl https://raw.github.com/pypa/pip/master/contrib/get-pip.py | python
 
-#. Cython_
-    * Provided you installed pip_, you should be able to simply run ::
-
-        $ pip install Cython
-
 #. samtools_
     * **On OS X** the simplest way to install samtools_ is using the homebrew_ command ``brew tap homebrew/science`` followed by ``brew install homebrew/science/samtools``.
     * **On Ubuntu** you can use ``sudo apt-get install samtools``
@@ -94,4 +89,3 @@ This will attempt to download, compile, and install the python dependencies (``c
 .. _SciPy: http://www.scipy.org/‎
 .. _matplotlib: http://www.matplotlib.org
 .. _pip: https://pypi.python.org/pypi/pip
-.. _Cython: http://cython.org
