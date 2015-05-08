@@ -40,6 +40,7 @@ setup(
         "pyDNase/scripts/dnase_to_javatreeview.py",
         "pyDNase/scripts/dnase_wig_tracks.py",
         "pyDNase/scripts/wellington_footprints.py",
+        "pyDNase/scripts/wellington_bootstrap.py",
         "pyDNase/scripts/dnase_to_JSON.py",
         "pyDNase/scripts/dnase_ddhs_scorer.py",
         "pyDNase/scripts/examples/example_footprint_scores.py",
