@@ -25,7 +25,7 @@ Querying the ``BAMHandler`` object returns a dictionary containing lists with DN
 
 `pyDNase` comes with several analysis scripts covering several common use cases of DNase-seq analysis, and also an implementation of the Wellington and Wellington 1D footprinting algorithms.
 
-to install `pyDNase`, ensure samtools_, bedtools_, and NumPy_ are installed, and run::
+to install `pyDNase`, run::
 
     $ pip install pyDNase
 
@@ -53,8 +53,5 @@ Reference
 License
 -------
 
-Copyright (C) 2013 Jason Piper. This work is licensed under the GNU GPLv3 license, see ``LICENCE.TXT`` for details.
+Copyright (C) 2015 Jason Piper. This work is licensed under the GNU GPLv3 license, see ``LICENCE.TXT`` for details.
 
-.. _NumPy: http://www.numpy.org/‎
-.. _samtools: http://www.htslib.org/
-.. _bedtools: http://bedtools.readthedocs.org/en/latest/
