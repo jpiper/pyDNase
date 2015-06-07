@@ -17,6 +17,7 @@
 
 import argparse
 import pyDNase
+from clint.textui import progress
 
 parser = argparse.ArgumentParser(description='writes a BED file with the FOS for the interval specified as the score')
 parser.add_argument("-A",action="store_true", help="ATAC-seq mode (default: False)",default=False)
@@ -29,6 +30,6 @@ reads   = pyDNase.BAMHandler(args.reads, ATAC=args.A)
 regions = pyDNase.GenomicIntervalSet(args.regions)
 
 outfile = open(args.output,"w")
-for i in regions:
+for i in progress.bar(regions):
     i.score = reads.FOS(i)
     print >> outfile, i
