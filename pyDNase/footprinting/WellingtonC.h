@@ -212,6 +212,58 @@ struct tuple2 * wellington(unsigned int const * const f,  unsigned int const * c
 	return retarr;
 }
 
+struct tuple2 * wellington1D(unsigned int const * const f,  unsigned int const * const r, unsigned int const length, unsigned int const * const shoulder_sizes, unsigned int const shoulders, unsigned int const * const fp_sizes, unsigned int const fps)
+{
+	float * const scores = calloc(length, sizeof(float));
+	unsigned int * const mle = calloc(length, sizeof(unsigned int));
+	for (unsigned int i = 0; i < shoulders; i++)
+	{
+		unsigned const int shoulder = shoulder_sizes[i];
+		unsigned int * const f_bindingArray = rolling_window(f,shoulder, length);
+		unsigned int * const b_bindingArray = rolling_window(r,shoulder, length);
+
+		for(unsigned int j = 0 ;j < fps ;j++)
+		{
+
+			unsigned const int fp_size = fp_sizes[j];
+			unsigned int * const fw_fpscores = rolling_window(f,fp_size, length);
+			unsigned int * const rv_fpscores = rolling_window(r,fp_size, length);
+			unsigned const int halffpround = floor((fp_size-1)/2);
+
+			for (unsigned int i = halffpround + shoulder ; i < length-shoulder-halffpround; i++)
+			{
+
+				unsigned const int xForward  = f_bindingArray[i-halffpround-1-shoulder+1];
+				unsigned const int nForward  = xForward + fw_fpscores[i-halffpround];
+				unsigned const int xBackward = b_bindingArray[i+halffpround+1];
+				unsigned const int nBackward = xBackward + rv_fpscores[i-halffpround];
+
+				if (xForward > 0 & xBackward > 0)
+				{
+					float const p = (float)(shoulder*2) / ((shoulder*2) + fp_size);
+					float const score = bdtrc(xForward + xBackward - 1, nForward + nBackward, p);
+
+					if(score < scores[i])
+					{
+						scores[i] = score;
+						mle[i] = fp_size;
+					}
+				}
+			}
+			free(fw_fpscores);
+			free(rv_fpscores);
+		}
+		free(f_bindingArray);
+		free(b_bindingArray);
+	}
+	struct tuple2 * const retarr = malloc(sizeof(struct tuple2));
+	retarr->fpscores = scores;
+	retarr->mles = mle;
+	return retarr;
+}
+
+
+
 void add(unsigned int * const a, unsigned int const * const b, int const k)
 {
 	for (int i = 0; i < k; i++) {
