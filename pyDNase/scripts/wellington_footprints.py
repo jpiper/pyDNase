@@ -23,7 +23,7 @@ from pyDNase import footprinting
 
 __version__ = "0.2.0"
 
-parser = argparse.ArgumentParser(description='Footprint the DHSs in a DNase-seq experiment using the Wellington Algorithm.')
+parser = argparse.ArgumentParser(description='Footprint the DHSs in a DNase-seq or ATAC-seq experiment using the Wellington Algorithm.')
 parser.add_argument("-b","--bonferroni",action="store_true", help="Performs a bonferroni correction (default: False)",default=False)
 parser.add_argument("-sh", "--shoulder-sizes", help="Range of shoulder sizes to try in format \"from,to,step\" (default: 35,36,1)",default="35,36,1",type=str)
 parser.add_argument("-fp", "--footprint-sizes", help="Range of footprint sizes to try in format \"from,to,step\" (default: 11,26,2)",default="11,26,2",type=str)

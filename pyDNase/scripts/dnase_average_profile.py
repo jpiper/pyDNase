@@ -25,7 +25,7 @@ mpl.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib import rcParams
 
-parser = argparse.ArgumentParser(description='Plots average profile of DNase activity surrounding a list of regions in a BED file')
+parser = argparse.ArgumentParser(description='Plots average profile of DNase (or Tn5 for ATAC-seq) activity surrounding a list of regions in a BED file')
 parser.add_argument("-w", "--window_size", help="Size of flanking area around centre of the regions to plot (default: 100)",default=100,type=int)
 parser.add_argument("-bf", "--bias-file", help="Location of the sorted, index",default = None,type=str)
 parser.add_argument("-i",action="store_true", help="Ignores any strand information in BED file and plots data relative to reference strand",default=False)
@@ -107,5 +107,8 @@ plt.gca().tick_params(axis='both', which='major', labelsize=28, pad=12)
 if args.bias_file:
     plt.gca().set_ylabel('Average DNase Activity\n (Observed/Expected)',size="32", multialignment='center')
 else:
-    plt.gca().set_ylabel('Average DNase Activity',size="26", multialignment='center')
+    if args.A:
+        plt.gca().set_ylabel('Average Tn5 integrations',size="26", multialignment='center')
+    else:
+        plt.gca().set_ylabel('Average DNase activity',size="26", multialignment='center')
 plt.savefig(args.output,bbox_inches='tight')
