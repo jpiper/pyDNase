@@ -72,7 +72,7 @@ if not clargs.output_prefix:
 
 #Load reads and regions
 regions = pyDNase.GenomicIntervalSet(clargs.regions)
-reads = pyDNase.BAMHandler(clargs.reads,caching=False,ATAC=args.A)
+reads = pyDNase.BAMHandler(clargs.reads,caching=False,ATAC=clargs.A)
 
 #Create a directory for p-values and WIG output. This /should/ be OS independent
 os.makedirs(os.path.join(clargs.outputdir,"p value cutoffs"))
