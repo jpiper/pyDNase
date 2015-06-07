@@ -35,6 +35,7 @@ parser.add_argument("-pv","--pv_cutoffs", help="Select footprints using a range 
 parser.add_argument("-dm","--dont-merge-footprints",action="store_true", help="Disables merging of overlapping footprints (Default: False)",default=False)
 parser.add_argument("-o","--output_prefix", help="The prefix for results files (default: <reads.regions>)",default="",type=str)
 parser.add_argument("-p", help="Number of processes to use (default: uses all CPUs)",default=0,type=int)
+parser.add_argument("-A",action="store_true", help="ATAC-seq mode (default: False)",default=False)
 parser.add_argument("regions", help="BED file of the regions you want to footprint")
 parser.add_argument("reads", help="The BAM file containing the DNase-seq reads")
 parser.add_argument("outputdir", help="A writeable directory to write the results to")
@@ -71,7 +72,7 @@ if not clargs.output_prefix:
 
 #Load reads and regions
 regions = pyDNase.GenomicIntervalSet(clargs.regions)
-reads = pyDNase.BAMHandler(clargs.reads,caching=False)
+reads = pyDNase.BAMHandler(clargs.reads,caching=False,ATAC=args.A)
 
 #Create a directory for p-values and WIG output. This /should/ be OS independent
 os.makedirs(os.path.join(clargs.outputdir,"p value cutoffs"))

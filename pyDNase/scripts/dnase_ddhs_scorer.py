@@ -22,6 +22,7 @@ from clint.textui import progress, puts
 
 parser = argparse.ArgumentParser(description='Annotates a set of DHSs with the dDHS score (He et al. 2012)')
 parser.add_argument("-l", action="store_true", help="low RAM mode (disables caching) (Default: False)",default=False)
+parser.add_argument("-A",action="store_true", help="ATAC-seq mode (default: False)",default=False)
 parser.add_argument("regions", help="The set of BED files you wish to annotate with dDHS scores")
 parser.add_argument("treat_dhs", help="The DHSs belonging to the Treatment")
 parser.add_argument("control_dhs", help="The DHSs belonging to the control")
@@ -30,8 +31,8 @@ parser.add_argument("reads_control", help="The BAM file containing the Control D
 parser.add_argument("output", help="filename to write the output to")
 args  = parser.parse_args()
 
-reads_treat   = pyDNase.BAMHandler(args.reads_treat, caching = not args.l)
-reads_control = pyDNase.BAMHandler(args.reads_control, caching = not args.l)
+reads_treat   = pyDNase.BAMHandler(args.reads_treat, caching = not args.l, ATAC=args.A)
+reads_control = pyDNase.BAMHandler(args.reads_control, caching = not args.l, ATAC=args.A)
 treat_dhs     = pyDNase.GenomicIntervalSet(args.treat_dhs)
 control_dhs   = pyDNase.GenomicIntervalSet(args.control_dhs)
 regions       = pyDNase.GenomicIntervalSet(args.regions)

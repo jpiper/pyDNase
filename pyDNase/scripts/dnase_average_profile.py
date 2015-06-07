@@ -32,15 +32,16 @@ parser.add_argument("-i",action="store_true", help="Ignores any strand informati
 parser.add_argument("-c",action="store_true", help="Combine the strand information into one graph",default=False)
 parser.add_argument("-n",action="store_true", help="Normalise cut counts to a fraction peaks",default=False)
 parser.add_argument("-b",action="store_true", help="Normalise for cutting bias",default=False)
+parser.add_argument("-A",action="store_true", help="ATAC-seq mode",default=False)
 parser.add_argument("regions", help="BED file of the regions you want to generate the average profile for")
 parser.add_argument("reads", help="The BAM file containing the DNase-seq data")
 parser.add_argument("output", help="filename to write the output to")
 args  = parser.parse_args()
 
-reads   = pyDNase.BAMHandler(args.reads)
+reads   = pyDNase.BAMHandler(args.reads,ATAC=args.A)
 if args.b:
     if args.bias_file != None:
-        freads   = pyDNase.BAMHandlerWithBias(pyDNase.FASTAHandler(args.bias_file),args.reads)
+        freads   = pyDNase.BAMHandlerWithBias(pyDNase.FASTAHandler(args.bias_file),args.reads,ATAC=args.A)
     else:
         raise ValueError("No FASTA file provided for bias correction!")
 regions = pyDNase.GenomicIntervalSet(args.regions)

@@ -20,12 +20,13 @@ from clint.textui import puts, progress
 parser = argparse.ArgumentParser(description='Writes a JSON file of DNase I cuts for regions from a BED file')
 parser.add_argument("-w", "--window_size", help="Resize all regions to a specific length",default = 0, type=int)
 parser.add_argument("-i",action="store_true", help="Ignores strand information in BED file",default=False)
+parser.add_argument("-A",action="store_true", help="ATAC-seq mode (default: False)",default=False)
 parser.add_argument("regions", help="BED file of the regions")
 parser.add_argument("reads", help="BAM file containing the read data")
 parser.add_argument("output", help="filename to write the JSON output to")
 args = parser.parse_args()
 
-reads = pyDNase.BAMHandler(args.reads)
+reads = pyDNase.BAMHandler(args.reads, ATAC=args.A)
 regions = pyDNase.GenomicIntervalSet(args.regions)
 
 if args.i:

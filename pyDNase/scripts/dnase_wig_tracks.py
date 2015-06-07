@@ -21,13 +21,14 @@ import pyDNase
 
 parser = argparse.ArgumentParser(description='Writes two WIG files with the cut information based on the regions in reads BED file and the reads in reads BAM file')
 parser.add_argument("-r", "--real",action="store_true", help="Report cuts on the negative strand as positive numbers instead of negative (default: False)",default=False)
+parser.add_argument("-A",action="store_true", help="ATAC-seq mode (default: False)",default=False)
 parser.add_argument("regions", help="BED file of the regions you want to write wig tracks for")
 parser.add_argument("reads", help="The BAM file containing the read data")
 parser.add_argument("fw_output", help="Path to write the forward reads wig track to")
 parser.add_argument("rev_output", help="Path to write the reverse reads wig track to")
 args = parser.parse_args()
 
-reads = pyDNase.BAMHandler(args.reads,caching=True)
+reads = pyDNase.BAMHandler(args.reads, caching=True, ATAC=args.A)
 regions = pyDNase.GenomicIntervalSet(args.regions)
 fwigout = open(args.fw_output,"w")
 bwigout = open(args.rev_output,"w")

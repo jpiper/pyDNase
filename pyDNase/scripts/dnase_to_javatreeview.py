@@ -28,6 +28,7 @@ parser.add_argument("-a",action="store_true", help="Write absolute cut counts in
 parser.add_argument("-n",action="store_true", help="Normalise the cut data for each region between 0 and 1",default=False)
 parser.add_argument("-c",action="store_true", help="Disable memory caching (low RAM mode)",default=False)
 parser.add_argument("-b",action="store_true", help="Normalise for cutting bias",default=False)
+parser.add_argument("-A",action="store_true", help="ATAC-seq mode (default: False)",default=False)
 parser.add_argument("-bf", "--bias-file", help="Location of the sorted, index",default = None,type=str)
 parser.add_argument("-r",action="store_true", help="Randomise the ordering of the output",default=False)
 parser.add_argument("regions", help="BED file of the regions you want to generate the heatmap for")
@@ -35,10 +36,10 @@ parser.add_argument("reads", help="The BAM file containing the read data")
 parser.add_argument("output", help="filename to write the CSV output to")
 args = parser.parse_args()
 
-reads   = pyDNase.BAMHandler(args.reads,caching= not args.c)
+reads = pyDNase.BAMHandler(args.reads,caching= not args.c, ATAC=args.A)
 if args.b:
     if args.bias_file != None:
-        freads   = pyDNase.BAMHandlerWithBias(pyDNase.FASTAHandler(args.bias_file),args.reads,caching= not args.c)
+        freads   = pyDNase.BAMHandlerWithBias(pyDNase.FASTAHandler(args.bias_file),args.reads,caching=not args.c, ATAC=args.A)
     else:
         raise ValueError("No FASTA file provided for bias correction!")
 regions = pyDNase.GenomicIntervalSet(args.regions)

@@ -38,7 +38,7 @@ class BAMHandler(object):
     """
     The object that provides the interface to DNase-seq data help in a BAM file
     """
-    def __init__(self, filePath,caching=True,chunkSize=1000):
+    def __init__(self, filePath, caching=True, chunkSize=1000, ATAC=False):
         """Initializes the BAMHandler with a BAM file
 
         Args:
@@ -60,6 +60,13 @@ class BAMHandler(object):
         #Do not change the CHUNK_SIZE after object instantiation!
         self.CHUNK_SIZE  = chunkSize
         self.CACHING     = caching
+        
+        if ATAC:
+            self.loffset = -5
+            self.roffset = +4
+        else:
+            self.loffset = 0
+            self.roffset = 0
 
     def __addCutsToCache(self,chrom,start,end):
         """Loads reads from the BAM file into the cutCache. Will not check if reads are already there.
@@ -96,8 +103,8 @@ class BAMHandler(object):
             if i not in self.lookupCache[chrom]:
                 self.__addCutsToCache(chrom,i,i+self.CHUNK_SIZE)
         #Fills in with zeroes where the hash table contains no information for each strand.
-        fwCutArray  = [self.cutCache[chrom]["+"].get(i, 0) for i in range(startbp,endbp)]
-        revCutArray = [self.cutCache[chrom]["-"].get(i, 0) for i in range(startbp,endbp)]
+        fwCutArray  = [self.cutCache[chrom]["+"].get(i, 0) for i in range(startbp + self.loffset ,endbp + self.loffset)]
+        revCutArray = [self.cutCache[chrom]["-"].get(i, 0) for i in range(startbp + self.roffset, endbp + self.roffset)]
         return {"+":fwCutArray,"-":revCutArray}
 
     def __lookupReadsWithoutCache(self,startbp,endbp,chrom):
@@ -119,8 +126,8 @@ class BAMHandler(object):
                 a = int(alignedread.pos) - 1
                 if a >= startbp:
                     tempcutf[a] =tempcutf.get(a, 0) + 1
-        fwCutArray  = [tempcutf.get(i, 0) for i in range(startbp,endbp)]
-        revCutArray = [tempcutr.get(i, 0) for i in range(startbp,endbp)]
+        fwCutArray  = [tempcutf.get(i, 0) for i in range(startbp + self.loffset ,endbp + self.loffset)]
+        revCutArray = [tempcutr.get(i, 0) for i in range(startbp + self.roffset, endbp + self.roffset)]
         return {"+":fwCutArray,"-":revCutArray}
 
     def purge_cache(self):
