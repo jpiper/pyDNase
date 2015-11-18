@@ -1,37 +1,50 @@
+0.2.0 - 2015-12-18
+==================
+* FEATURE: Differential Footprinting between treatment and control (``wellington_bootstrap.py``)
+* FEATURE: Estimate 6-mer bias cleavage (``dnase_bias_estimator.py``)
+* FEATURE: ATAC-seq compatability! (pass -A to most of the scripts to enable ATAC-seq read shifting for the transposase staggered integration)
+* FEATURE: Preliminary DNase I cleavage bias correction in ``dnase_average_profile.py`` and ``dnase_to_javatreeview.py`` (see `here <http://pythonhosted.org/pyDNase/biascorrecting.html>`__ for full documentation)
+* FEATURE: Calculate ∆DHS `(He et al. 2012) <http://www.ncbi.nlm.nih.gov/pubmed/22508765>`__ scores between two DNase-seq runs (``dnase_ddhs_scorer.py``) 
+* FEATURE: Annotate BED file number of cuts in each region (``dnase_cut_counter.py``)
+* ENHANCEMENT: DNase-seq footprinting tutorial :)
+* ENHANCEMENT: In the interests of performance, ``BAMHandler`` no longer returns NumPy arrays, just lists.
+* ENHANCEMENT: ``wellington_footprints.py`` is now multithreaded (woo) - performance roughly scales linearly with number of CPUs.
+* ENHANCEMENT: The ``Footprinting`` module has been refactored to allow for multithreading - those using the Wellington API directly take note of the changes.
+* ENHANCEMENT: Everything is faster! More cythonised code.
+
 0.1.7 - 2014-09-03
 ==================
-* Fixed bug in dnase_to_javatreeview.py that prevented caching from being disabled
-
+* BUG: Fixed bug in dnase_to_javatreeview.py that prevented caching from being disabled
 
 0.1.6 - 2014-03-07
 ==================
-* Fixed FDR calculation that was only performing 1 randomisation! Many thanks to @arjanvandervelde
+* BUG: Fixed FDR calculation that was only performing 1 randomisation! Many thanks to @arjanvandervelde
 
 0.1.5 - 2014-01-31
 ==================
-* Removed SciPy requirement
-* Added Travis-CI automated builds for 2.6, 2.7 and 3.3 and coveralls
-* Fixed WIG output for UCSC compatability
+* ENHANCEMENT: Removed SciPy requirement
+* ENHANCEMENT: Added Travis-CI automated builds for 2.6, 2.7 and 3.3 and coveralls
+* BUG: Fixed WIG output for UCSC compatibility
 
 0.1.4 - 2014-01-05
 ==================
-* Fix dodgy deployment
+* BUG: Fix dodgy deployment
 
 0.1.3 - 2014-01-05
 ==================
-* Fixed Python 2.6 Compatibility (again!)
+* BUG: Fixed Python 2.6 Compatibility (again!)
 
 0.1.2 - 2013-12-09
 ==================
-* Fix issue where BED intervals with chromosome names not starting with "c" were silently being ignored (reported by Aaron Hardin)
-* Fix clint dependency issue (no longer requires custom version of clint)
-* Fix spelling error in CHANGES
+* BUG: Fix issue where BED intervals with chromosome names not starting with "c" were silently being ignored (reported by Aaron Hardin)
+* BUG: Fix clint dependency issue (no longer requires custom version of clint)
+* BUG: Fix spelling error in CHANGES
 
 0.1.1 - 2013-12-05
 ==================
-* Misc. small bug fixes
-* Fixed Python 2.6 Compatibility
-* Added JSON export script
+* BUG: Misc. small bug fixes
+* ENHANCEMENT: Fixed Python 2.6 Compatibility
+* ENHANCEMENT: Added JSON export script
 
 0.1.0 - 2013-09-01
 ==================

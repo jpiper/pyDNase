@@ -1,6 +1,6 @@
 .. _footprinting:
 
-Footprinting DNase-seq data
+API: Footprinting DNase-seq data
 ---------------------------
 
 .. note :: We provide wellington_footprints.py as a script, which will automate footprinting for end users. This below information only necessary if you want to do something fancy. You might want to read the documentation in the source for more information.

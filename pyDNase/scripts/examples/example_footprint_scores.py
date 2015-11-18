@@ -25,7 +25,7 @@ regions = pyDNase.GenomicIntervalSet(pyDNase.example_regions())
 
 #Plot cuts data
 plt.plot(reads[regions[0]]["+"],c="red")
-plt.plot(-reads[regions[0]]["-"],c="blue")
+plt.plot([-i for i in reads[regions[0]]["-"]],c="blue")
 
 #Footprint and plot the results
 footprinter = wellington(regions[0],reads)

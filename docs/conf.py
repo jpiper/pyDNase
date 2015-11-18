@@ -13,6 +13,7 @@
 #
 
 import sys
+import sphinx_rtd_theme
 sys.path.insert(0, '../')
 import pyDNase
 import sphinx_rtd_theme
@@ -44,7 +45,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'pyDNase'
-copyright = u'2013, Jason Piper'
+copyright = u'2014, Jason Piper'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -99,7 +100,6 @@ pygments_style = 'sphinx'
 # a list of builtin themes.
 html_theme = "sphinx_rtd_theme"
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.

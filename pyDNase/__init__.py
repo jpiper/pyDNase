@@ -16,11 +16,10 @@
 from . import _version
 __version__ = _version.__version__
 
-import os
-import numpy as np
-import pysam
+import os, math, pysam
 from clint.textui import progress, puts_err
-
+import sqlite3 as lite
+import tempfile, warnings, pickle
 
 def example_reads():
     """
@@ -39,7 +38,7 @@ class BAMHandler(object):
     """
     The object that provides the interface to DNase-seq data help in a BAM file
     """
-    def __init__(self, filePath,caching=True,chunkSize=1000):
+    def __init__(self, filePath, caching=True, chunkSize=1000, ATAC=False):
         """Initializes the BAMHandler with a BAM file
 
         Args:
@@ -57,15 +56,17 @@ class BAMHandler(object):
             raise IOError(errorString)
 
         #Initialise the empty DNase cut cache with the chromosome names from the BAM file
-        self.cutCache = {}
-        #This helps us differentiate between what's been looked up and when there's just no reads
-        self.lookupCache = {}
-        for i in self.samfile.references:
-            self.cutCache[i]    = {"+":{},"-":{}}
-            self.lookupCache[i] = []
+        self.purge_cache()
         #Do not change the CHUNK_SIZE after object instantiation!
         self.CHUNK_SIZE  = chunkSize
         self.CACHING     = caching
+        
+        if ATAC:
+            self.loffset = -5
+            self.roffset = +4
+        else:
+            self.loffset = 0
+            self.roffset = 0
 
     def __addCutsToCache(self,chrom,start,end):
         """Loads reads from the BAM file into the cutCache. Will not check if reads are already there.
@@ -96,14 +97,14 @@ class BAMHandler(object):
 
         """
         #Expand the region to the nearest CHUNK_SIZE and load these reads if they aren't in the cache
-        lbound = int(np.floor(startbp / float(self.CHUNK_SIZE)) * float(self.CHUNK_SIZE))
-        ubound = int(np.ceil(endbp / float(self.CHUNK_SIZE)) * float(self.CHUNK_SIZE))
+        lbound = int(math.floor(startbp / float(self.CHUNK_SIZE)) * float(self.CHUNK_SIZE))
+        ubound = int(math.ceil(endbp / float(self.CHUNK_SIZE)) * float(self.CHUNK_SIZE))
         for i in range(lbound,ubound,self.CHUNK_SIZE):
             if i not in self.lookupCache[chrom]:
                 self.__addCutsToCache(chrom,i,i+self.CHUNK_SIZE)
         #Fills in with zeroes where the hash table contains no information for each strand.
-        fwCutArray  = np.array([self.cutCache[chrom]["+"].get(i, 0) for i in range(startbp,endbp)])
-        revCutArray = np.array([self.cutCache[chrom]["-"].get(i, 0) for i in range(startbp,endbp)])
+        fwCutArray  = [self.cutCache[chrom]["+"].get(i, 0) for i in range(startbp + self.loffset ,endbp + self.loffset)]
+        revCutArray = [self.cutCache[chrom]["-"].get(i, 0) for i in range(startbp + self.roffset, endbp + self.roffset)]
         return {"+":fwCutArray,"-":revCutArray}
 
     def __lookupReadsWithoutCache(self,startbp,endbp,chrom):
@@ -125,11 +126,24 @@ class BAMHandler(object):
                 a = int(alignedread.pos) - 1
                 if a >= startbp:
                     tempcutf[a] =tempcutf.get(a, 0) + 1
-        fwCutArray  = np.array([tempcutf.get(i, 0) for i in range(startbp,endbp)])
-        revCutArray = np.array([tempcutr.get(i, 0) for i in range(startbp,endbp)])
+        fwCutArray  = [tempcutf.get(i, 0) for i in range(startbp + self.loffset ,endbp + self.loffset)]
+        revCutArray = [tempcutr.get(i, 0) for i in range(startbp + self.roffset, endbp + self.roffset)]
         return {"+":fwCutArray,"-":revCutArray}
 
-    def __getitem__(self,vals):
+    def purge_cache(self):
+        """
+        Wipes the internal cache - useful if you need finer grain control over caching.
+        """
+
+        #Initialise the empty DNase cut cache with the chromosome names from the BAM file
+        self.cutCache = {}
+        #This helps us differentiate between what's been looked up and when there's just no reads
+        self.lookupCache = {}
+        for i in self.samfile.references:
+            self.cutCache[i]    = {"+":{},"-":{}}
+            self.lookupCache[i] = []
+
+    def get_cut_values(self,vals):
         """Return a dictionary with the cut counts. Can be used in two different ways:
 
         You can either use a string or a GenomicInterval to query for cuts.
@@ -171,6 +185,12 @@ class BAMHandler(object):
             retval["+"], retval["-"] = retval["-"][::-1], retval["+"][::-1]
         return retval
 
+    def __getitem__(self,vals):
+        """
+        Wrapper for get_cut_values
+        """
+        return self.get_cut_values(vals)
+
     def FOS(self,interval,bgsize=35):
         """Calculates the Footprint Occupancy Score (FOS) for a Genomicinterval. See Neph et al. 2012 (Nature) for full details.
         
@@ -181,22 +201,27 @@ class BAMHandler(object):
             bgsize (int): The size of the flanking region to use when calculating the FOS (default: 35)
 
         Returns:
-            A float with the FOS - returns 10000 if it can't calculate it
+            A float with the FOS - returns -1 if it can't calculate it
         """
 
         cuts = self["{0},{1},{2},{3}".format(interval.chromosome,interval.startbp-bgsize,interval.endbp+bgsize,interval.strand)]
         forwardArray, backwardArray     = cuts["+"], cuts["-"]
-        cutArray     = (forwardArray + backwardArray)
+        cutArray     = [forwardArray[i] + backwardArray[i] for i in range(len(forwardArray))]
 
         leftReads   = float(sum(cutArray[:bgsize]))
         centreReads = float(sum(cutArray[bgsize:-bgsize]))
         rightReads  = float(sum(cutArray[-bgsize:]))
 
+        #Here we normalise by region length
+        leftReads   /= (bgsize * 1.0)
+        centreReads /= (len(interval) * 1.0)
+        rightReads  /= (bgsize * 1.0)
+
         try:
-            return ( (centreReads+1) / leftReads ) + ( (centreReads+1)/rightReads)
+            return ( (centreReads+1.0) / (leftReads + 1.0) ) + ( (centreReads+1.0)/(rightReads + 1.0))
         except BaseException:
-            #If it can't calculate the score, return an arbitrarily large number
-            return 10000
+            #If it can't calculate the score, return a sentinel value
+            return -1
 
 
 class GenomicIntervalSet(object):
@@ -405,7 +430,8 @@ class GenomicIntervalSet(object):
         Args:
             toSize: an int of the size to resize all intervals to
         """
-        assert type(toSize) is int, "Can only resize intervals to integers"
+        if not type(toSize) == int:
+            ValueError("Can only resize intervals to integers")
 
         for i in self:
             xamount = toSize-(i.endbp-i.startbp)//2
@@ -462,7 +488,7 @@ class GenomicInterval(object):
         if label:
             self.label = str(label)
         else:
-            self.label     = "Unnamed{0}".format(self.__class__.counter)
+            self.label = "Unnamed{0}".format(self.__class__.counter)
 
         #This contains anything else you want to store about the interval
         self.metadata = {}
@@ -478,3 +504,104 @@ class GenomicInterval(object):
         Returns the length of the GenomicInterval in basepairs
         """
         return self.endbp - self.startbp
+
+class FASTAHandler(object):
+    def __init__(self, fasta_file, vcf_file = None):
+        self.ffile = pysam.Fastafile(fasta_file)
+        self.conn = None
+        if vcf_file:
+            self.conn = lite.connect(tempfile.NamedTemporaryFile().name)
+            with open(vcf_file, 'r') as f:
+                records = [(x[0],x[1],x[3],x[4]) for x in (x.split() for x in f if x[0] != "#")]
+                with self.conn:
+                    cur = self.conn.cursor()
+                    cur.execute("CREATE TABLE SNPS(chr TEXT,pos INT, ref TEXT, mut TEXT)")
+                    cur.executemany("INSERT INTO SNPS VALUES(?,?,?,?)",records)
+                #Manually remove these, as they potentially could be large in memory
+                del(records)
+    def sequence(self,interval):
+        sequence_string = self.ffile.fetch(interval.chromosome,interval.startbp,interval.endbp).upper()
+        if not self.conn:
+          #  if interval.strand != "+":
+           #     sequence_string = sequence_string[::-1]
+            return str(sequence_string)
+        else:
+            query_string = "SELECT chr, pos - ? - 1 as offset,ref,mut FROM SNPS WHERE chr=? and pos BETWEEN ? and ?"
+            snps = self.conn.cursor().execute(query_string,(interval.startbp,interval.chromosome,interval.startbp,interval.endbp)).fetchall()
+            sequence_list = [i for i in sequence_string]
+            for i in snps:
+                if sequence_list[i[1]] != i[2]:
+                    warnings.warn("MISMATCH IN REF TO SNP - WHAT HAVE YOU DONE?")
+                else:
+                    #str needed as sqlite returns unicode
+                    sequence_list[i[1]] = str(i[3])
+            return "".join(sequence_list)
+
+class BiasCalculator(object):
+    def __init__(self,bias_file=None):
+        if bias_file is None:
+            #Load the genomic IMR90 bias from Shirley
+            bias_file = open(os.path.join(os.path.join(os.path.dirname(__file__), "data"),"IMR90_6mer.pickle"))
+        self.biasdict = pickle.load(bias_file)
+    def bias(self,sequence):
+        """
+        NOTE:   Because bias is calculated from  the centre of a 6-mer,
+                the data will be missing the values for the first and last 3 bases
+        """
+        #Split sequence into consituent 6-mers
+        sequence_chunks = [sequence[i:i+6] for i in range(len(sequence)-5)]
+        #Look up values of these 6-mers in the precomputed bias database
+        fw_bias =  [float(self.biasdict[i]["forward"])for i in sequence_chunks]
+        rv_bias =  [float(self.biasdict[i]["reverse"])for i in sequence_chunks]
+        #FIXME: Pickled data should use "+" and "-" and not forward and reverse to prevent confusion here
+        #FIXME: Fix the pickled data - the reverse positions are off by one!
+        return {"+": fw_bias, "-":rv_bias}
+
+class BAMHandlerWithBias(BAMHandler):
+    def __init__(self, sequence_object, *args, **kwargs):
+        super(BAMHandlerWithBias, self).__init__(*args, **kwargs)
+        self.sequence_data = sequence_object
+        self.bias_data     = BiasCalculator()
+
+    def __getitem__(self,interval):
+        if not isinstance(interval,GenomicInterval):
+            raise TypeError("Sorry, but we only support GenomicInterval querying for the Bias Handler at the moment")
+        #Note: This is pretty Hacky!
+        interval.startbp -= 3
+        interval.endbp   += 3
+        #Get the sequence data
+        bias_values = self.bias_data.bias(self.sequence_data.sequence(interval))
+        interval.startbp += 3
+        interval.endbp   -= 3
+        bias_values["+"] = bias_values["+"][1:]
+        bias_values["-"] = bias_values["-"][:-1]
+        cuts = self.get_cut_values(interval)
+
+        #Nomenclature used below is that in the He. et al Nature Methods Paper
+        #These are N_i^s - note we are using an entire hypersensitive site, and not 50bp like the paper
+        N_i = {"+":sum(cuts["+"]) ,"-":sum(cuts["-"])}
+
+        #bias_values are y_i
+        for dir in ("-","+"):
+            bias_values[dir] = [float(i)/sum(bias_values[dir]) for i in bias_values[dir]]
+
+        #Stupid pass-by-reference
+        predicted_cuts = {"+":cuts["+"][:],"-":cuts["-"][:]}
+        #Calculate the predicted counts (nhat_i, which is N_i * y_i) based on n-mer cutting preference
+        for dir in ("-","+"):
+            #For each base
+            for num, val in enumerate(predicted_cuts[dir]):
+                #Multiply the total number of observed cuts by the bias value
+                predicted_cuts[dir][num] = bias_values[dir][num] * N_i[dir]
+
+        #Now we normalised the observed cuts by the expected
+        for dir in ("-","+"):
+            #For each base
+            for num, val in enumerate(predicted_cuts[dir]):
+                #Divide the number of observed cuts by the bias value
+                pass
+                #predicted_cuts[dir][num] = (cuts[dir][num] + 1.0)  / (val + 1.0)
+        if interval.strand == "-":
+            # That's numberwang, let's rotate the board!
+            predicted_cuts["+"], predicted_cuts["-"] = predicted_cuts["-"][::-1], predicted_cuts["+"][::-1]
+        return predicted_cuts
