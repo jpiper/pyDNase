@@ -71,7 +71,7 @@ Peak calling
 
 A prerequisite to footprinting the genome is the definition of DNase Hypersensitive Sites (DHSs) - these are regions of the genome where nucleosomes have been displaced and the DNase is free to cut the DNA.
 
-Many peak callers exist such as MACS, MACS2, F-seq, HOMER's FindPeaks, HOTSPOTs (the list is practically endless). There's a good review of peak calling in DNase-seq data `here <http://www.plosone.org/article/info:doi/10.1371/journal.pone.0096303>`_, and identifying DNase hypersensitive sites is outsite of the remit of this tutorial, so I emplore you to read around the area and use your own judgement here.
+Many peak callers exist such as MACS, MACS2, F-seq, HOMER's FindPeaks, HOTSPOTs (the list is practically endless). There's a good review of peak calling in DNase-seq data `here <http://www.plosone.org/article/info:doi/10.1371/journal.pone.0096303>`__, and identifying DNase hypersensitive sites is outsite of the remit of this tutorial, so I emplore you to read around the area and use your own judgement here.
 
 However, if you *really* want to be spoonfed (gimme the peaks now, I'm in a rush!) then I usually use HOMER_'s ``findPeaks`` with the parameters::
 
@@ -174,7 +174,7 @@ and then use ``File->Open``, change the file format box to ``All Files`` and the
 Motif Finding
 ~~~~~~~~~~~~~
 
-Most of the things that people want to do with their footprints is look for enriched motifs, annotating the nearest TSS to specific factors, etc. I usually use HOMER_ for this as it fits in with my workflow. We won't have time to go into how to do these analyses here, but HOMER has a really good tutorial on how to find motifs `here <http://homer.salk.edu/homer/motif/index.html>`_ and has generally very good documentation on annotating genomic regions. I highly recommend you pour yourself a nice glass of wine and settle down in a fancy leather chair and read the website thoroughly. Don't go running in, guns blazing, running all the tools without understanding all the parameters!
+Most of the things that people want to do with their footprints is look for enriched motifs, annotating the nearest TSS to specific factors, etc. I usually use HOMER_ for this as it fits in with my workflow. We won't have time to go into how to do these analyses here, but HOMER has a really good tutorial on how to find motifs `here <http://homer.salk.edu/homer/motif/index.html>`__ and has generally very good documentation on annotating genomic regions. I highly recommend you pour yourself a nice glass of wine and settle down in a fancy leather chair and read the website thoroughly. Don't go running in, guns blazing, running all the tools without understanding all the parameters!
 
 .. danger::
     Make sure when using HOMER_'s ``findMotifsGenome.pl`` script, make sure to use the ``-size given`` parameter or it will just search for all motifs within several hundred basepairs of the footprint!
@@ -187,7 +187,7 @@ If you've survived this far, well done! Fire up the python terminal::
 
     $ python
 
-And head over to the advanced documentation `here <http://pythonhosted.org/pyDNase/bam.html>`_ and `here <http://pythonhosted.org/pyDNase/intervals.html>`_, which introduces you to how to load up data from a BAM file directly. I don't anticipate many people will get this far, but if you do, I will come and talk you through how to proceed here if you're having trouble following the API specification (although it is a fairly simple API).
+And head over to the advanced documentation `here <http://pythonhosted.org/pyDNase/bam.html>`__ and `here <http://pythonhosted.org/pyDNase/intervals.html>`__, which introduces you to how to load up data from a BAM file directly. I don't anticipate many people will get this far, but if you do, I will come and talk you through how to proceed here if you're having trouble following the API specification (although it is a fairly simple API).
 
 Can you answer these questions? If you can't think of how to approach the problem, come and ask me and I'll give you some pointers.
 

@@ -1,7 +1,7 @@
 .. _intervals:
 
-Handling Genomic Intervals
----------------------------
+API: Handling Genomic Intervals
+-------------------------------
 
 ``GenomicInterval``
 ~~~~~~~~~~~~~~~~~~~

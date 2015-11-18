@@ -1,6 +1,6 @@
 .. _bam:
 
-Getting DNase-seq cut data from BAM files
+API: Getting DNase-seq cut data from BAM files
 -----------------------------------------
 
 .. TODO: Make it so loading the example bed and bam file is easy!

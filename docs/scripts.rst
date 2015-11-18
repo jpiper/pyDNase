@@ -1,7 +1,7 @@
 .. _scripts:
 
-Useful Scripts
---------------
+pyDNase Analysis Scripts
+------------------------
 
 pyDNase installs several scripts which also serve as examples of how to use the pyDNAse API. After you have installed pyDNase these will all be installed into your $PATH, so you can run these directly from your terminal by typing in the name of the script (including the .py extension)
 
@@ -29,18 +29,22 @@ This is a very simple script that take a BED and a BAM file and produce a new BE
 dnase_average_profile.py
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
+.. important ::
+    Make sure you look at the next section (:ref:`biascorrecting`)
+
 .. image:: images/K562CTCFCHIP.png
 
 
 Average profile of DNase I activity surrounding ChIP-seq confirmed CTCF sites in K562 data.
 
 Average profile plots illustrating DNase activity surrounding a set of regions are frequently used in papers.
-Here, we provide a simple way to generate one
+Here, we provide a simple way to generate one.
 
 .. program-output:: python ../pyDNase/scripts/dnase_average_profile.py -h
 
 Hopefully this is self-explanatory. This script uses matplotlib to generate the output,
 so it will write a filetype based on the file extension provided (e.g. ``out.png`` or ``output.pdf``).
+
 
 dnase_wig_tracks.py
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -71,6 +75,9 @@ This outputs DNase-seq data to JSON
 dnase_to_javatreeview.py
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
+.. important ::
+    Make sure you look at the next section (:ref:`biascorrecting`)
+
 .. image:: images/K562AP1CHIP.png
 
 Want to make a heatmap? Love JavaTreeView_? So do we! This script will generate a CSV file that you can put straight into JavaTreeView to visualize your data.
@@ -86,6 +93,30 @@ wellington_footprints.py
 So you want to get footprints from your data? No problem. We provide a handy script that will do this for you. There's lots of options here, so please read through them carefully. The most basic usage of the script uses the default parameters described in our original paper. If anything goes wrong at any point, then there should be useful error messages telling you exactly what went wrong.
 
 .. program-output:: python ../pyDNase/scripts/wellington_footprints.py -h
+
+wellington_bootstrap.py
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+This script will calculate the differential footprints between two DNase-seq datasets using the Wellington-bootstrap algorithm.
+
+.. program-output:: python ../pyDNase/scripts/wellington_bootstrap.py -h
+
+
+dnase_ddhs_scorer.py
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+This will score DHSs between two DNase-seq datasets according to the ∆DHS algorithm `(He et al. 2012) <http://www.ncbi.nlm.nih.gov/pubmed/22508765>`__
+
+.. program-output:: python ../pyDNase/scripts/dnase_ddhs_scorer.py -h
+
+
+dnase_bias_estimator.py
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+This is mainly here for curiosity reasons - the chances are that if you're trying to calculate this then you'll know how to do it.
+
+.. program-output:: python ../pyDNase/scripts/dnase_bias_estimator.py -h
+
 
 
 .. _JavaTreeView: http://jtreeview.sourceforge.net/

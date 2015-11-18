@@ -5,28 +5,20 @@
 
 .. include:: ../README.rst
 
+Changelog
+--------
+.. include:: ../CHANGES
+
 Contents
 --------
 .. toctree::
    :maxdepth: 2
    
    installation
+   scripts
+   tutorial
+   biascorrecting
+   faqs
    bam
    intervals
    footprinting
-   scripts
-   biascorrecting
-   faqs
-   tutorial
-
-.. *installation
-.. *Querying a BAM File for cut data
-.. *Working with Intervals
-.. *Footprinting
-.. *Scripts
-.. *FAQS
-.. *pyDNase Reference
-
-Changelog
---------
-.. include:: ../CHANGES

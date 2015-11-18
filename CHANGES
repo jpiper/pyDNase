@@ -1,12 +1,30 @@
-0.2.0 - XXXX-XX-XX
+0.2.0 - 2015-12-18
 ==================
-* FEATURE: Differential Footprinting!
-* FEATURE: Preliminary bias correction in dnase_average_profile.py and dnase_to_javatreeview.py
+* FEATURE: Differential Footprinting between treatment and control (``wellington_bootstrap.py``)
+* FEATURE: Estimate 6-mer bias cleavage (``dnase_bias_estimator.py``)
+* FEATURE: ATAC-seq compatability! (pass -A to most of the scripts to enable ATAC-seq read shifting for the transposase staggered integration)
+* FEATURE: Preliminary DNase I cleavage bias correction in ``dnase_average_profile.py`` and ``dnase_to_javatreeview.py`` (see `here <http://pythonhosted.org/pyDNase/biascorrecting.html>`__ for full documentation)
+* FEATURE: Calculate ∆DHS `(He et al. 2012) <http://www.ncbi.nlm.nih.gov/pubmed/22508765>`__ scores between two DNase-seq runs (``dnase_ddhs_scorer.py``) 
+* FEATURE: Annotate BED file number of cuts in each region (``dnase_cut_counter.py``)
 * ENHANCEMENT: DNase-seq footprinting tutorial :)
-* ENHANCEMENT: In the interests of performance, `BAMHandler` no longer returns NumPy arrays, just lists.
-* ENHANCEMENT: `wellington_footprints.py` is now multithreaded - performance roughly scales linearly with number of CPUs
-* ENHANCEMENT: The `Footprinting` module has been refactored to allow for multithreading - those using the Wellington API directly take note of the changes.
-* ENHANCEMENT: Somewhere along the way we picked up Travic CI. No more broken builds.
+* ENHANCEMENT: In the interests of performance, ``BAMHandler`` no longer returns NumPy arrays, just lists.
+* ENHANCEMENT: ``wellington_footprints.py`` is now multithreaded (woo) - performance roughly scales linearly with number of CPUs.
+* ENHANCEMENT: The ``Footprinting`` module has been refactored to allow for multithreading - those using the Wellington API directly take note of the changes.
+* ENHANCEMENT: Everything is faster! More cythonised code.
+
+0.1.7 - 2014-09-03
+==================
+* BUG: Fixed bug in dnase_to_javatreeview.py that prevented caching from being disabled
+
+0.1.6 - 2014-03-07
+==================
+* BUG: Fixed FDR calculation that was only performing 1 randomisation! Many thanks to @arjanvandervelde
+
+0.1.5 - 2014-01-31
+==================
+* ENHANCEMENT: Removed SciPy requirement
+* ENHANCEMENT: Added Travis-CI automated builds for 2.6, 2.7 and 3.3 and coveralls
+* BUG: Fixed WIG output for UCSC compatibility
 
 0.1.4 - 2014-01-05
 ==================

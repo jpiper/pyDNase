@@ -12,11 +12,11 @@ Supported systems
 
 :Software:
 
-   Tested on OS X 10.8 and on Ubuntu 11.10, but should run fine on any other *NIX flavour as long as the prerequisites are fulfilled.
+   Tested on OS X 10.8 and on Ubuntu 11.10, but should run fine on any other \*NIX flavour as long as the prerequisites are fulfilled.
 
 
    .. warning::
-        Windows is not supported.
+        Windows is not supported - not even Cygwin!
 
 
 Pre-installation requirements
@@ -36,12 +36,11 @@ In order to install :mod:`pyDNase`, the following software is required. Most peo
     As long as you get a response from one of these, you're good to go. Failing that...
     
     * **On OS X < 10.7.3:** Install "Xcode" from https://developer.apple.com/downloads/
-    * **On OS X >= 10.7.3:** Install "Command Line Tools for Xcode" from https://developer.apple.com/downloads/
-    (you can also install Xcode, but this is overkill)
+    * **On OS X >= 10.7.3:** Install "Command Line Tools for Xcode" from https://developer.apple.com/downloads/ (you can also install Xcode, but this is overkill)
     * **On Ubuntu:** Install with ``sudo apt-get install build-essentials``
    
    .. note::
-        If you're using another *NIX distro, I assume you know what you're doing.
+        If you're using another \*NIX distro, I assume you know what you're doing.
 
 #. Python_ >= 2.6 (including Python 3!)
     * This will come installed with OS X or any respectable \*NIX distro.
