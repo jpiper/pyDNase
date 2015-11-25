@@ -52,9 +52,11 @@ Reference
 ---------
 
 .. note ::
-    If you use pyDNase or the Wellington algorithm in your work, please cite the following paper.
+    If you use pyDNase or the Wellington algorithm in your work, please cite the following papers.
     
     Piper et al. 2013. *Wellington: A novel method for the accurate identification of digital genomic footprints from DNase-seq data*, Nucleic Acids Research 2013; doi: 10.1093/nar/gkt850
+
+    Piper et al. 2015. *Wellington-bootstrap: differential DNase-seq footprinting identifies cell-type determining transcription factors*, BMC Genomics 2015; doi:10.1186/s12864-015-2081-4 
 
 License
 -------
