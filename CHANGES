@@ -1,3 +1,7 @@
+0.2.1 - 2015-12-25
+==================
+* ENHANCEMENT: ATAC-seq mode for ``wellington_bootstrap.py``
+
 0.2.0 - 2015-12-18
 ==================
 * FEATURE: Differential Footprinting between treatment and control (``wellington_bootstrap.py``)

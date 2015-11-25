@@ -114,7 +114,7 @@ else:
 max_regions_cached_in_memory = 10 * CPUs
 p = mp.Pool(CPUs)
 
-#TODO: How about we store a dictionary of open file handles - or would this cause problems with threading?
+
 def writetodisk(fp):
     #Raw WIG scores
     print >> wigout, "fixedStep\tchrom=" + str(fp.interval.chromosome) + "\t start="+ str(fp.interval.startbp) +"\tstep=1"
@@ -147,7 +147,6 @@ def multiWellington(regions,reads,**kwargs):
     p.join()
 
 #TODO: Use **args or something similar to pass arguments?
-#TODO: Pass FDR Iterations, FDR LimiFDR_cutoff=0.01,FDR_iterations=100
 multiWellington(orderedbychr,reads, shoulder_sizes = clargs.shoulder_sizes ,footprint_sizes = clargs.footprint_sizes, FDR_cutoff=clargs.FDR_cutoff,FDR_iterations=clargs.FDR_iterations,bonferroni = clargs.bonferroni)
 
 wigout.close()

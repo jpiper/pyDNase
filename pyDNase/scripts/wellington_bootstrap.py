@@ -157,6 +157,7 @@ parser.add_argument("-fdrlimit", "--FDR_limit",
 parser.add_argument("-p", "--processes", help="Number of processes to use (default: uses all CPUs)",
                     default=0,
                     type=int)
+parser.add_argument("-A", action="store_true", help="ATAC-seq mode (default: False)", default=False)
 parser.add_argument("treatment_bam", help="BAM file for treatment")
 parser.add_argument("control_bam", help="BAM file for control")
 parser.add_argument("bedsites", help="BED file of genomic locations to search in")
@@ -175,9 +176,9 @@ assert 0 < args.FDR_cutoff < 1, "FDR must be between 0 and 1"
 assert args.FDR_limit < 0, "FDR limit must be less than 0"
 
 # Treatment
-reads2 = pyDNase.BAMHandler(args.treatment_bam, caching=0)
+reads2 = pyDNase.BAMHandler(args.treatment_bam, caching=0, ATAC=clargs.A)
 # Control
-reads1 = pyDNase.BAMHandler(args.control_bam, caching=0)
+reads1 = pyDNase.BAMHandler(args.control_bam, caching=0, ATAC=clargs.A)
 # Regions of Interest
 regions = pyDNase.GenomicIntervalSet(args.bedsites)
 # Output
