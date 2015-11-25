@@ -176,9 +176,9 @@ assert 0 < args.FDR_cutoff < 1, "FDR must be between 0 and 1"
 assert args.FDR_limit < 0, "FDR limit must be less than 0"
 
 # Treatment
-reads2 = pyDNase.BAMHandler(args.treatment_bam, caching=0, ATAC=clargs.A)
+reads2 = pyDNase.BAMHandler(args.treatment_bam, caching=0, ATAC=args.A)
 # Control
-reads1 = pyDNase.BAMHandler(args.control_bam, caching=0, ATAC=clargs.A)
+reads1 = pyDNase.BAMHandler(args.control_bam, caching=0, ATAC=args.A)
 # Regions of Interest
 regions = pyDNase.GenomicIntervalSet(args.bedsites)
 # Output

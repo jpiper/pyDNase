@@ -1,3 +1,7 @@
+0.2.2 - 2015-12-26
+==================
+* BUG: Fix error in ``wellington_bootstrap.py``
+
 0.2.1 - 2015-12-25
 ==================
 * ENHANCEMENT: ATAC-seq mode for ``wellington_bootstrap.py``
