@@ -75,7 +75,7 @@ class Diffwell(pyDNase.footprinting.wellington):
             merged_ranges = []
             while len(ranges):
                 # Find best score
-                sorted(ranges, key=lambda x: -x[2])
+                ranges.sort(key=lambda x: -x[2])
                 # Take the last value
                 best = ranges.pop()
                 merged_ranges.append(best)
@@ -85,8 +85,6 @@ class Diffwell(pyDNase.footprinting.wellington):
                     if not c <= best[1] <= d:
                         new_ranges.append([c, d, e, f])
                 ranges = new_ranges
-            else:
-                 merged_ranges = ranges
             # Creates reads GenomicIntervalSet and adds the footprints to them
             for i in merged_ranges:
                 return_set.append(((i[0] + i[1])/2, i[3]))

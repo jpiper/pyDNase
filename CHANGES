@@ -1,3 +1,7 @@
+0.2.3 - 2016-01--17
+==================
+* BUG: Fix error in ``wellington_bootstrap.py`` which caused no output to be written to disk (thanks to Duy Pham for reporting)
+
 0.2.2 - 2015-12-26
 ==================
 * BUG: Fix error in ``wellington_bootstrap.py``
