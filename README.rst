@@ -42,7 +42,7 @@ for full documentation go to: http://pythonhosted.org/pyDNase/
 Support
 -------
 
-If you're having any troubles, please send an email to `j.piper@warwick.ac.uk` and I'll do my best to help you out. If you notice any bugs, then please raise an issue over at the github repo. If you require more formal training on the analysis of DNase-seq or ATAC-seq data, I am available for consultancy. Likewise, if you are a commercial entity looking for a support contract, please get in touch.
+If you're having any troubles, please send an email to `j.piper@me.com` and I'll do my best to help you out. If you notice any bugs, then please raise an issue over at the github repo. If you require more formal training on the analysis of DNase-seq or ATAC-seq data, I am available for consultancy. Likewise, if you are a commercial entity looking for a support contract, please get in touch.
 
 Contributions
 -------------
@@ -61,4 +61,4 @@ Reference
 License
 -------
 
-Copyright (C) 2015 Jason Piper. This work is licensed under the GNU GPLv3 license, see ``LICENCE.TXT`` for details. If you require the use of this software under a difference license (e.g. for commercial purposes), please email me at `j.piper@warwick.ac.uk`.
+Copyright (C) 2015 Jason Piper. This work is licensed under the GNU GPLv3 license, see ``LICENCE.TXT`` for details. If you require the use of this software under a difference license (e.g. for commercial purposes), please email me at `j.piper@me.com`.

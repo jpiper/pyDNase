@@ -15,7 +15,7 @@ setup(
     description='DNase-seq analysis library',
     long_description=open('README.rst',"rt").read(),
     author='Jason Piper',
-    author_email='j.piper@warwick.ac.uk',
+    author_email='j.piper@me.com',
     url='http://jpiper.github.io/pyDNase',
     license='GPLv3',
     ext_modules = [Extension("pyDNase.footprinting.WellingtonC", sources = ["pyDNase/footprinting/WellingtonC.c"], extra_compile_args=['-std=c99'])],
