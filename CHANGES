@@ -1,3 +1,10 @@
+0.2.5 - 2016-07-23
+==================
+* IMPORTANT: Python 2.6 and 3.2 support dropped. 2.7, 3.3, 3.4, and 3.5 are where it's at.
+* BUG: pyDNase now ignores unmapped reads in the BAM input file. NOTE: Will not ignore secondary alignments in paired reads. Filter these out beforehand if you need this behaviour for the timebeing.
+* BUG: Fix `dnase_bias_estimator.py` script arguments.
+* BUG: Fix `frd_limit` flag not being able to be set to 0 in `wellington_footprints.py` and `wellington_bootstrap.py`.
+
 0.2.4 - 2016-05-30
 ==================
 * BUG: Update author’s contact details
