@@ -28,7 +28,7 @@ setup(
         # Not enforcing versions for numpy and matplotlib as they can be a bitch to upgrade
         "numpy", # Tested on >=1.5.0
         "matplotlib", # Tested on >=1.2
-        "pysam >= 0.7.5",
+        "pysam >= 0.8.1",
         "clint >= 0.3.2",
     ],
     

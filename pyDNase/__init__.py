@@ -77,14 +77,15 @@ class BAMHandler(object):
             end (int): The end of the interval
         """
         for alignedread in self.samfile.fetch(chrom, max(start, 0), end):
-            if alignedread.is_reverse:
-                a = int(alignedread.aend)
-                if a <= end +1:
-                    self.cutCache[chrom]["-"][a] = self.cutCache[chrom]["-"].get(a, 0) + 1
-            else:
-                a = int(alignedread.pos) -1
-                if a >= start:
-                    self.cutCache[chrom]["+"][a] = self.cutCache[chrom]["+"].get(a, 0) + 1
+            if not alignedread.is_unmapped:
+                if alignedread.is_reverse:
+                    a = int(alignedread.reference_end)
+                    if a <= end +1:
+                        self.cutCache[chrom]["-"][a] = self.cutCache[chrom]["-"].get(a, 0) + 1
+                else:
+                    a = int(alignedread.reference_start) -1
+                    if a >= start:
+                        self.cutCache[chrom]["+"][a] = self.cutCache[chrom]["+"].get(a, 0) + 1
         self.lookupCache[chrom].append(start)
 
     def __lookupReadsUsingCache(self,startbp,endbp,chrom):
@@ -118,14 +119,15 @@ class BAMHandler(object):
         tempcutf = {}
         tempcutr = {}
         for alignedread in self.samfile.fetch(chrom, max(startbp, 0), endbp):
-            if alignedread.is_reverse:
-                a = int(alignedread.aend)
-                if a <= endbp +1:
-                    tempcutr[a] = tempcutr.get(a, 0) + 1
-            else:
-                a = int(alignedread.pos) - 1
-                if a >= startbp:
-                    tempcutf[a] =tempcutf.get(a, 0) + 1
+            if not alignedread.is_unmapped:
+                if alignedread.is_reverse:
+                    a = int(alignedread.reference_end)
+                    if a <= endbp +1:
+                        tempcutr[a] = tempcutr.get(a, 0) + 1
+                else:
+                    a = int(alignedread.reference_start) - 1
+                    if a >= startbp:
+                        tempcutf[a] = tempcutf.get(a, 0) + 1
         fwCutArray  = [tempcutf.get(i, 0) for i in range(startbp + self.loffset ,endbp + self.loffset)]
         revCutArray = [tempcutr.get(i, 0) for i in range(startbp + self.roffset, endbp + self.roffset)]
         return {"+":fwCutArray,"-":revCutArray}
