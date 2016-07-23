@@ -42,8 +42,8 @@ In order to install :mod:`pyDNase`, the following software is required. Most peo
    .. note::
         If you're using another \*NIX distro, I assume you know what you're doing.
 
-#. Python_ >= 2.6 (including Python 3!)
-    * This will come installed with OS X or any respectable \*NIX distro.
+#. Python_ 2.7, 3.3, 3.4, or 3.5
+    * One of these will usually come installed with OS X or any respectable \*NIX distro.
 
 #. pip_:
         Used for automated installation of Python packages. If you don't already have pip_ installed, you can use the following command to install it ::
