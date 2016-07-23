@@ -27,7 +27,7 @@ setup(
     install_requires=[
         # Not enforcing versions for numpy and matplotlib as they can be a bitch to upgrade
         "numpy", # Tested on >=1.5.0
-        "matplotlib", # Tested on >=1.2
+        "matplotlib == 1.5.1", # mpl > 2.0 only works on py3
         "pysam >= 0.8.1",
         "clint >= 0.3.2",
     ],
