@@ -86,7 +86,7 @@ if __name__ == "__main__":
 	parser.add_argument("regions", help="BED file of the regions you want to exclude from calculating the bias. This is usually the DHSs.")
 	parser.add_argument("reads", help="The sorted, indexed BAM file containing the DNase-seq data")
 	parser.add_argument("genome_sequence", help="The sorted, indexed FASTA file containing the genome sequence")
-	parser.add_argument("genomesize", help="The .chrom.sizes file containing chromosome sizes generated using something like  \"mysql --user=genome --host=genome-mysql.cse.ucsc.edu -A -e \"select chrom, size from hg19.chromInfo\"  > hg19.chrom.sizes\"")
+	parser.add_argument("genome_size", help="The .chrom.sizes file containing chromosome sizes generated using something like  \"mysql --user=genome --host=genome-mysql.cse.ucsc.edu -A -e \"select chrom, size from hg19.chromInfo\"  > hg19.chrom.sizes\"")
 	parser.add_argument("output", help="output file prefix to write the observed/expected ratios to (will append .txt and .pickle)")
 	args  = parser.parse_args()
 	
@@ -137,6 +137,6 @@ if __name__ == "__main__":
 	totalsum = float(sum(enriched.values()))
 	whatdic = {key:{'forward':val/totalsum,'reverse':enriched[rev_comp(key)]/totalsum} for key,val in enriched.iteritems()}
 	with open(outfile + ".pickle", "w") as bias_file:
-	    pickle.dump(whatdic,bias_file)
+		pickle.dump(whatdic,bias_file)
 		
 	os.remove(bed_file_for_6mers)

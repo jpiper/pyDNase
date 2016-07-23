@@ -100,7 +100,7 @@ You should really take some time to read through the settings in the documentati
 
 I often get the comment that footprints from are too stringent. This is a common question - if you have low read depths you might need to adjust the ``-fdrlimit`` parameter to something less stringent like ``"-10"`` or ``"-5"`` (the closer to 0, the more liberal), which sets the mimimum amount of evidence required to support the alternate hypothesis of there being a footprint present.
 
-.. tip:: You can set ``-fdrlimit`` to ``-0.01`` if you want to disable this feature altogether, and then sort the footprints by their Wellington scores (e.g. ``sort -nk 5 <fp.bed> > <out.bed>``) and then visualise the footprints choose your threshold this way if you are unsure.
+.. tip:: You can set ``-fdrlimit`` to ``0`` if you want to disable this feature altogether, and then sort the footprints by their Wellington scores (e.g. ``sort -nk 5 <fp.bed> > <out.bed>``) and then visualise the footprints choose your threshold this way if you are unsure.
 
 
 Interpreting Wellington's Output

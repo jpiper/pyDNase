@@ -171,7 +171,7 @@ except ValueError:
     raise RuntimeError("Footprint sizes must be supplied as from,to,step")
 
 assert 0 < args.FDR_cutoff < 1, "FDR must be between 0 and 1"
-assert args.FDR_limit < 0, "FDR limit must be less than 0"
+assert args.FDR_limit <= 0, "FDR limit must be less than or equal to 0 (to disable)"
 
 # Treatment
 reads2 = pyDNase.BAMHandler(args.treatment_bam, caching=0, ATAC=args.A)

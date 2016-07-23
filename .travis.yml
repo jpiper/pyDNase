@@ -1,15 +1,19 @@
+sudo: false
 language: python
 python:
-    - 2.6
-    - 2.7
-    - 3.3
+    - "2.7"
+    - "3.3"
+    - "3.4"
+    - "3.5"
+addons:
+  apt:
+    packages:
+    - libopenblas-dev
+    - liblapack-dev
+    - libatlas-dev
 before_install:
-    - sudo apt-get update -qq
-    - sudo apt-get install -qq libopenblas-dev liblapack-dev libatlas-dev
     - pip install numpy
     - pip install coveralls
-install:
-    - python setup.py install
 script:
     - coverage run --source=pyDNase setup.py test
 after_success:

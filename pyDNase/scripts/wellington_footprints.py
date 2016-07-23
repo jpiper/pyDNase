@@ -85,7 +85,7 @@ except:
     raise RuntimeError("p-value cutoffs must be supplied as a string of numbers separated by commas")
 
 assert 0 < clargs.FDR_cutoff < 1, "FDR must be between 0 and 1"
-assert clargs.FDR_limit < 0, "FDR limit must be less than 0"
+assert clargs.FDR_limit <= 0, "FDR limit must be less than or equal to 0 (to disable)"
 assert len([f for f in os.listdir(clargs.outputdir) if f[0] != "."]) == 0, "output directory {0} is not empty!".format(clargs.outputdir)
 
 if not clargs.output_prefix:
