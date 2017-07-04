@@ -48,7 +48,7 @@ In order to install :mod:`pyDNase`, the following software is required. Most peo
 #. pip_:
         Used for automated installation of Python packages. If you don't already have pip_ installed, you can use the following command to install it ::
 
-            $ curl https://raw.github.com/pypa/pip/master/contrib/get-pip.py | python
+            $ curl https://bootstrap.pypa.io/get-pip.py | python
 
 #. samtools_
     * **On OS X** the simplest way to install samtools_ is using the homebrew_ command ``brew tap homebrew/science`` followed by ``brew install homebrew/science/samtools``.
