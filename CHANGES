@@ -1,8 +1,9 @@
-0.2.6 - 2016-07-23
+0.2.6 - 2018-01-27
 ==================
 * ENHANCEMENT: License changed to MIT
 * BUGFIX: Scripts should now all work for Python 3
 * BUGFIX: Empty lines in BED files are now ignored
+* BUGFIX: Fix issue with passing values to the "-pv" argument on `wellington_footprints.py`
 
 0.2.5 - 2016-07-23
 ==================
