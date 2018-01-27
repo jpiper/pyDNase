@@ -1,3 +1,9 @@
+0.2.6 - 2016-07-23
+==================
+* ENHANCEMENT: License changed to MIT
+* BUGFIX: Scripts should now all work for Python 3
+* BUGFIX: Empty lines in BED files are now ignored
+
 0.2.5 - 2016-07-23
 ==================
 * IMPORTANT: Python 2.6 and 3.2 support dropped. 2.7, 3.3, 3.4, and 3.5 are where it's at.
