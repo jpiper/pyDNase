@@ -264,9 +264,10 @@ class GenomicIntervalSet(object):
         intervalCount = max(enumerate(open(filename)))[0] + 1
         for _ in progress.bar(range(intervalCount)):
             line    = BEDfile.readline()
-            #Skip lines in the bed files which are UCSC track metadata or comments
-            if not self.__isBEDHeader(line):
-                records.append(self.__parseBEDString(line))
+            if line:
+                #Skip lines in the bed files which are UCSC track metadata or comments
+                if not self.__isBEDHeader(line):
+                    records.append(self.__parseBEDString(line))
 
         for i in records:
             self.__addInterval(GenomicInterval(i[0], i[1], i[2], i[3], i[4], i[5]))
