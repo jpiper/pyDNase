@@ -1,20 +1,3 @@
-#!/usr/bin/env python
-
-# Copyright (C) 2016 Jason Piper - j.piper@me.com
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 import pyDNase, pyDNase.footprinting
 import numpy as np
 from clint.textui import progress
@@ -26,19 +9,19 @@ __version__ = "0.1.0"
 def write_treat_to_disk(item):
     if item.results:
         for i in item.results:
-            print >> treatment_output, i
+            print(i, file=treatment_output)
 
 
 def write_control_to_disk(item):
     if item.results:
         for i in item.results:
-            print >> control_output, i
+            print(i, file=control_output)
 
 
 def xrange_from_string(range_string):
     try:
-        range_string = map(int, range_string.split(","))
-        range_string = range(range_string[0], range_string[1], range_string[2])
+        range_string = list(map(int, range_string.split(",")))
+        range_string = list(range(range_string[0], range_string[1], range_string[2]))
         assert len(range_string) > 0
         return range_string
     except:
@@ -192,7 +175,7 @@ else:
 max_regions_cached_in_memory = 50 * CPUs
 p = mp.Pool(CPUs)
 
-print "Performing differential footprinting..."
+print("Performing differential footprinting...")
 
 for i in progress.bar(regions):
     # Make sure the interval is actually big enough to footprint to begin with

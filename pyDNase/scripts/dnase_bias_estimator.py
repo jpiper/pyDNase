@@ -1,20 +1,3 @@
-#!/usr/bin/env python
-
-# Copyright (C) 2016 Jason Piper - j.piper@me.com
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 import os, argparse, tempfile, operator, pickle
 from collections import defaultdict
 import pybedtools, pysam
@@ -55,7 +38,7 @@ def generate_6mer_bed(bam_file, gdict):
 		# Ignore unmapped reads
 		if not i.is_unmapped:
 			chrom = samfile.getrname(i.reference_id)
-			if chrom in gdict.keys():
+			if chrom in list(gdict.keys()):
 				# Determine which end of the read is the 5' end
 				if i.is_reverse:
 					strand = "-"
@@ -64,7 +47,7 @@ def generate_6mer_bed(bam_file, gdict):
 					strand  = "+"
 					startbp, endbp = i.reference_start - 3, i.reference_start + 3
 				if startbp > 0 and endbp < gdict[chrom]:
-					print >> outfile, "\t".join((str(i) for i in (chrom, startbp, endbp, 0, 0, strand)))
+					print("\t".join((str(i) for i in (chrom, startbp, endbp, 0, 0, strand))), file=outfile)
 	outfile.close()
 	return outfile.name
 
@@ -126,16 +109,16 @@ if __name__ == "__main__":
 	expected = get_kmers(shuffled_cuts.seqfn)
 	
 	print("Calculating...")
-	enriched = {i:observed[i]/float(expected[i]) for i in observed.keys()}
+	enriched = {i:observed[i]/float(expected[i]) for i in list(observed.keys())}
 
 	print("Dumping bias txt file...")
 	with open(outfile + ".txt", 'w') as ofile:
-		for i in sorted(enriched.items(), key=operator.itemgetter(1)):
-			print >> ofile, "\t".join(map(str,i))
+		for i in sorted(list(enriched.items()), key=operator.itemgetter(1)):
+			print("\t".join(map(str,i)), file=ofile)
 
 	print("Writing bias pickle file...")
 	totalsum = float(sum(enriched.values()))
-	whatdic = {key:{'forward':val/totalsum,'reverse':enriched[rev_comp(key)]/totalsum} for key,val in enriched.iteritems()}
+	whatdic = {key:{'forward':val/totalsum,'reverse':enriched[rev_comp(key)]/totalsum} for key,val in enriched.items()}
 	with open(outfile + ".pickle", "w") as bias_file:
 		pickle.dump(whatdic,bias_file)
 		

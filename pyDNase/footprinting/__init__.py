@@ -1,18 +1,3 @@
-# Copyright (C) 2016 Jason Piper - j.piper@me.com
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 import warnings, random
 import numpy as np
 import pyDNase
@@ -20,7 +5,7 @@ from . import WellingtonC
 
 class wellington(object):
 
-    def __init__(self,interval,reads,shoulder_sizes=range(35,36), footprint_sizes = range(11,26,2),FDR_cutoff=0.01,FDR_iterations=100,bonferroni=None):
+    def __init__(self,interval,reads,shoulder_sizes=list(range(35,36)), footprint_sizes = list(range(11,26,2)),FDR_cutoff=0.01,FDR_iterations=100,bonferroni=None):
 
         #Set up the model parameters
         self.shoulder_sizes  = shoulder_sizes
@@ -99,7 +84,7 @@ class wellington(object):
         while templogProb.min() < withCutoff:
             minimapos = templogProb.argmin()
             minimafplen = tempMLE[minimapos]
-            minimaphalffplen = int(minimafplen)/2
+            minimaphalffplen = int(minimafplen/2)
             lbound = max(minimapos-(minimaphalffplen),0)
             rbound = min(minimapos+(minimaphalffplen),len(templogProb))
             ranges.append((lbound,rbound,templogProb.min(),minimafplen))

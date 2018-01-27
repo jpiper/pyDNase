@@ -1,18 +1,3 @@
-# Copyright (C) 2016 Jason Piper - j.piper@me.com
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 from . import _version
 __version__ = _version.__version__
 
@@ -277,11 +262,12 @@ class GenomicIntervalSet(object):
         records = []
         
         intervalCount = max(enumerate(open(filename)))[0] + 1
-        for _ in progress.bar(range(intervalCount)):
+        for _ in progress.bar(list(range(intervalCount))):
             line    = BEDfile.readline()
-            #Skip lines in the bed files which are UCSC track metadata or comments
-            if not self.__isBEDHeader(line):
-                records.append(self.__parseBEDString(line))
+            if line:
+                #Skip lines in the bed files which are UCSC track metadata or comments
+                if not self.__isBEDHeader(line):
+                    records.append(self.__parseBEDString(line))
 
         for i in records:
             self.__addInterval(GenomicInterval(i[0], i[1], i[2], i[3], i[4], i[5]))
@@ -372,7 +358,7 @@ class GenomicIntervalSet(object):
         Return the number of intervals in the set
         """
         intervals = 0
-        for each in self.intervals.values():
+        for each in list(self.intervals.values()):
             intervals += len(each)
         return intervals
 
@@ -380,14 +366,14 @@ class GenomicIntervalSet(object):
         """
         Iterates over the intervals in the order that the intervals were generated
         """
-        for each in sorted(sum(self.intervals.values(),[]), key=lambda peak: peak.importorder):
+        for each in sorted(sum(list(self.intervals.values()),[]), key=lambda peak: peak.importorder):
             yield each
 
     def __getitem__(self, i):
         """
         Indexes the intervals in the order that the intervals were generated
         """
-        return sorted(sum(self.intervals.values(),[]), key=lambda peak: peak.importorder)[i]
+        return sorted(sum(list(self.intervals.values()),[]), key=lambda peak: peak.importorder)[i]
 
     def __delitem__(self,i):
         """

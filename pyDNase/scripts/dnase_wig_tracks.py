@@ -1,20 +1,3 @@
-#!/usr/bin/env python
-
-# Copyright (C) 2016 Jason Piper - j.piper@me.com
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 import argparse
 from clint.textui import progress, puts
 import pyDNase
@@ -34,8 +17,8 @@ fwigout = open(args.fw_output,"w")
 bwigout = open(args.rev_output,"w")
 
 #Required for UCSC upload
-print >> fwigout, "track type=wiggle_0"
-print >> bwigout, "track type=wiggle_0"
+print("track type=wiggle_0", file=fwigout)
+print("track type=wiggle_0", file=bwigout)
 
 #Prints all the wig values but sorts by chromosome/genomic location first
 #TODO: port this most awesome (and hacky) code iteration code to the main API, possibly using a generator expression?
@@ -44,15 +27,15 @@ for each in progress.bar([item for sublist in sorted(regions.intervals.values())
     cuts = reads[each]
     f,r = cuts["+"], cuts["-"]
     #Note that we add 1 to the startbp as WIG is 1-based and the internal logic is 0 based
-    print >> fwigout, "fixedStep\tchrom=" + str(each.chromosome) + "\t start="+ str(each.startbp+1) +"\tstep=1"
+    print("fixedStep\tchrom=" + str(each.chromosome) + "\t start="+ str(each.startbp+1) +"\tstep=1", file=fwigout)
     for i in f:
-        print >> fwigout, i
-    print >> bwigout, "fixedStep\tchrom=" + str(each.chromosome) + "\t start="+ str(each.startbp+1) +"\tstep=1"
+        print(i, file=fwigout)
+    print("fixedStep\tchrom=" + str(each.chromosome) + "\t start="+ str(each.startbp+1) +"\tstep=1", file=bwigout)
     for i in r:
         if args.real:
-            print >> bwigout, i
+            print(i, file=bwigout)
         else:
-            print >> bwigout, -i
+            print(-i, file=bwigout)
 
 fwigout.close()
 bwigout.close()

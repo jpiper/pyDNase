@@ -1,20 +1,3 @@
-#!/usr/bin/env python
-
-# Copyright (C) 2016 Jason Piper - j.piper@me.com
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 import argparse
 import pyDNase
 import math
@@ -44,12 +27,12 @@ control_base_pairs = 0
 
 puts("Calculating enrichment for Treatment")
 for i in progress.bar(treat_dhs):
-    treat_total_cuts += sum([sum(j) for j in reads_treat[i].values()])
+    treat_total_cuts += sum([sum(j) for j in list(reads_treat[i].values())])
     treat_base_pairs += len(i)
 
 puts("Calculating enrichment for Control")
 for i in progress.bar(control_dhs):
-    control_total_cuts += sum([sum(j) for j in reads_control[i].values()])
+    control_total_cuts += sum([sum(j) for j in list(reads_control[i].values())])
     control_base_pairs += len(i)
 
 treat_base_pairs   = float(treat_base_pairs)
@@ -61,10 +44,10 @@ ofile = open(args.output,"w")
 
 puts("Calculating dDHS scores...")
 for i in progress.bar(regions):
-    treat_cuts   =  sum([sum(j) for j in reads_treat[i].values()])
-    control_cuts =  sum([sum(j) for j in reads_control[i].values()])
+    treat_cuts   =  sum([sum(j) for j in list(reads_treat[i].values())])
+    control_cuts =  sum([sum(j) for j in list(reads_control[i].values())])
     LHS = math.sqrt(  treat_cuts /(  treat_total_cuts / treat_base_pairs))
     RHS = math.sqrt(control_cuts /(control_total_cuts / control_base_pairs))
     i.score = LHS - RHS
-    print >> ofile, i
+    print(i, file=ofile)
 ofile.close()
