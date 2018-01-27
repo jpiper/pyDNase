@@ -17,8 +17,8 @@ fwigout = open(args.fw_output,"w")
 bwigout = open(args.rev_output,"w")
 
 #Required for UCSC upload
-print >> fwigout, "track type=wiggle_0"
-print >> bwigout, "track type=wiggle_0"
+print("track type=wiggle_0", file=fwigout)
+print("track type=wiggle_0", file=bwigout)
 
 #Prints all the wig values but sorts by chromosome/genomic location first
 #TODO: port this most awesome (and hacky) code iteration code to the main API, possibly using a generator expression?
@@ -27,15 +27,15 @@ for each in progress.bar([item for sublist in sorted(regions.intervals.values())
     cuts = reads[each]
     f,r = cuts["+"], cuts["-"]
     #Note that we add 1 to the startbp as WIG is 1-based and the internal logic is 0 based
-    print >> fwigout, "fixedStep\tchrom=" + str(each.chromosome) + "\t start="+ str(each.startbp+1) +"\tstep=1"
+    print("fixedStep\tchrom=" + str(each.chromosome) + "\t start="+ str(each.startbp+1) +"\tstep=1", file=fwigout)
     for i in f:
-        print >> fwigout, i
-    print >> bwigout, "fixedStep\tchrom=" + str(each.chromosome) + "\t start="+ str(each.startbp+1) +"\tstep=1"
+        print(i, file=fwigout)
+    print("fixedStep\tchrom=" + str(each.chromosome) + "\t start="+ str(each.startbp+1) +"\tstep=1", file=bwigout)
     for i in r:
         if args.real:
-            print >> bwigout, i
+            print(i, file=bwigout)
         else:
-            print >> bwigout, -i
+            print(-i, file=bwigout)
 
 fwigout.close()
 bwigout.close()

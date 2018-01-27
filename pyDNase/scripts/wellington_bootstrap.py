@@ -9,19 +9,19 @@ __version__ = "0.1.0"
 def write_treat_to_disk(item):
     if item.results:
         for i in item.results:
-            print >> treatment_output, i
+            print(i, file=treatment_output)
 
 
 def write_control_to_disk(item):
     if item.results:
         for i in item.results:
-            print >> control_output, i
+            print(i, file=control_output)
 
 
 def xrange_from_string(range_string):
     try:
-        range_string = map(int, range_string.split(","))
-        range_string = range(range_string[0], range_string[1], range_string[2])
+        range_string = list(map(int, range_string.split(",")))
+        range_string = list(range(range_string[0], range_string[1], range_string[2]))
         assert len(range_string) > 0
         return range_string
     except:
@@ -175,7 +175,7 @@ else:
 max_regions_cached_in_memory = 50 * CPUs
 p = mp.Pool(CPUs)
 
-print "Performing differential footprinting..."
+print("Performing differential footprinting...")
 
 for i in progress.bar(regions):
     # Make sure the interval is actually big enough to footprint to begin with

@@ -15,4 +15,4 @@ regions = pyDNase.GenomicIntervalSet(args.regions)
 outfile = open(args.output,"w")
 for i in progress.bar(regions):
     i.score = reads.FOS(i)
-    print >> outfile, i
+    print(i, file=outfile)

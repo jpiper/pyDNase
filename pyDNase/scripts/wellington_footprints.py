@@ -49,8 +49,8 @@ def percentile(N, percent):
 
 def xrange_from_string(range_string):
     try:
-        range_string = map(int,range_string.split(","))
-        range_string = range(range_string[0],range_string[1],range_string[2])
+        range_string = list(map(int,range_string.split(",")))
+        range_string = list(range(range_string[0],range_string[1],range_string[2]))
         assert len(range_string) > 0
         return range_string
     except:
@@ -63,7 +63,7 @@ except ValueError:
     raise RuntimeError("shoulder and footprint sizes must be supplied as from,to,step")
 
 try:
-    clargs.pv_cutoffs = map(int,clargs.pv_cutoffs.split(","))
+    clargs.pv_cutoffs = list(map(int,clargs.pv_cutoffs.split(",")))
 except:
     raise RuntimeError("p-value cutoffs must be supplied as a string of numbers separated by commas")
 
@@ -84,7 +84,7 @@ wigout = open(os.path.relpath(clargs.outputdir) + "/" + clargs.output_prefix + "
 fdrout = open(os.path.relpath(clargs.outputdir) + "/" + clargs.output_prefix + ".WellingtonFootprints.FDR.{0}.bed".format(clargs.FDR_cutoff),"w")
 
 #Required for UCSC upload
-print >> wigout, "track type=wiggle_0"
+print("track type=wiggle_0", file=wigout)
 
 #Iterate in chromosome, basepair order
 orderedbychr = [item for sublist in sorted(regions.intervals.values()) for item in sorted(sublist, key=lambda peak: peak.startbp)]
@@ -100,18 +100,18 @@ p = mp.Pool(CPUs)
 
 def writetodisk(fp):
     #Raw WIG scores
-    print >> wigout, "fixedStep\tchrom=" + str(fp.interval.chromosome) + "\t start="+ str(fp.interval.startbp) +"\tstep=1"
-    print >> wigout , '\n'.join(map(str, fp.scores))
+    print("fixedStep\tchrom=" + str(fp.interval.chromosome) + "\t start="+ str(fp.interval.startbp) +"\tstep=1", file=wigout)
+    print('\n'.join(map(str, fp.scores)), file=wigout)
     #FDR cutoff footprints
     fdr = fp.FDR_value
     if fdr < clargs.FDR_limit:
          for footprint in fp.footprints(withCutoff=fdr,merge=clargs.dont_merge_footprints):
-             print >> fdrout, footprint
+             print(footprint, file=fdrout)
     #p-value cutoff footprints
     for fpscore in clargs.pv_cutoffs:
         ofile = open(os.path.relpath(os.path.join(clargs.outputdir,"p value cutoffs")) + "/" + clargs.output_prefix + ".WellingtonFootprints.{0}.bed".format(fpscore),"a")
         for footprint in fp.footprints(withCutoff=fpscore):
-            print >> ofile, footprint
+            print(footprint, file=ofile)
         ofile.close()
 
 def multiWellington(regions,reads,**kwargs):

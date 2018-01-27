@@ -15,5 +15,5 @@ ofile = open(args.output,"w")
 
 puts("Writing output...")
 for i in progress.bar(regions):
-    i.score   = sum([sum(j) for j in reads[i].values()])
-    print >> ofile, i
+    i.score   = sum([sum(j) for j in list(reads[i].values())])
+    print(i, file=ofile)

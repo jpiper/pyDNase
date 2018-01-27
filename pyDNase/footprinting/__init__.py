@@ -5,7 +5,7 @@ from . import WellingtonC
 
 class wellington(object):
 
-    def __init__(self,interval,reads,shoulder_sizes=range(35,36), footprint_sizes = range(11,26,2),FDR_cutoff=0.01,FDR_iterations=100,bonferroni=None):
+    def __init__(self,interval,reads,shoulder_sizes=list(range(35,36)), footprint_sizes = list(range(11,26,2)),FDR_cutoff=0.01,FDR_iterations=100,bonferroni=None):
 
         #Set up the model parameters
         self.shoulder_sizes  = shoulder_sizes
@@ -84,7 +84,7 @@ class wellington(object):
         while templogProb.min() < withCutoff:
             minimapos = templogProb.argmin()
             minimafplen = tempMLE[minimapos]
-            minimaphalffplen = int(minimafplen)/2
+            minimaphalffplen = int(minimafplen/2)
             lbound = max(minimapos-(minimaphalffplen),0)
             rbound = min(minimapos+(minimaphalffplen),len(templogProb))
             ranges.append((lbound,rbound,templogProb.min(),minimafplen))

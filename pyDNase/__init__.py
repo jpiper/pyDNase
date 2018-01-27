@@ -262,7 +262,7 @@ class GenomicIntervalSet(object):
         records = []
         
         intervalCount = max(enumerate(open(filename)))[0] + 1
-        for _ in progress.bar(range(intervalCount)):
+        for _ in progress.bar(list(range(intervalCount))):
             line    = BEDfile.readline()
             if line:
                 #Skip lines in the bed files which are UCSC track metadata or comments
@@ -358,7 +358,7 @@ class GenomicIntervalSet(object):
         Return the number of intervals in the set
         """
         intervals = 0
-        for each in self.intervals.values():
+        for each in list(self.intervals.values()):
             intervals += len(each)
         return intervals
 
@@ -366,14 +366,14 @@ class GenomicIntervalSet(object):
         """
         Iterates over the intervals in the order that the intervals were generated
         """
-        for each in sorted(sum(self.intervals.values(),[]), key=lambda peak: peak.importorder):
+        for each in sorted(sum(list(self.intervals.values()),[]), key=lambda peak: peak.importorder):
             yield each
 
     def __getitem__(self, i):
         """
         Indexes the intervals in the order that the intervals were generated
         """
-        return sorted(sum(self.intervals.values(),[]), key=lambda peak: peak.importorder)[i]
+        return sorted(sum(list(self.intervals.values()),[]), key=lambda peak: peak.importorder)[i]
 
     def __delitem__(self,i):
         """

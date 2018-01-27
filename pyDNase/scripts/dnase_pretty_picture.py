@@ -59,8 +59,8 @@ for each in progress.bar(regions):
         rv.append(reads[each]["-"])
 
 
-fw = [map(float,i) for i in fw]
-rv = [map(float,i) for i in rv]
+fw = [list(map(float,i)) for i in fw]
+rv = [list(map(float,i)) for i in rv]
 fw = [np.divide(np.subtract(i, min(i)), np.subtract(max(i) , min(i))) for i in fw]
 rv = [np.divide(np.subtract(i, min(i)), np.subtract(max(i) , min(i))) for i in rv]
 
