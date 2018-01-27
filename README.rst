@@ -61,4 +61,4 @@ Reference
 License
 -------
 
-Copyright (C) 2015 Jason Piper. This work is licensed under the GNU GPLv3 license, see ``LICENCE.TXT`` for details. If you require the use of this software under a difference license (e.g. for commercial purposes), please email me at `j.piper@me.com`.
+Copyright (C) 2015 Jason Piper. This work is licensed under the MIT license, see ``LICENCE.TXT`` for details. If you require the use of this software under a difference license, please email me at `j.piper@me.com`.
