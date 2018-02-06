@@ -82,7 +82,7 @@ fdrout = open(os.path.relpath(clargs.outputdir) + "/" + clargs.output_prefix + "
 print("track type=wiggle_0", file=wigout)
 
 #Iterate in chromosome, basepair order
-orderedbychr = [item for sublist in sorted(regions.intervals.values()) for item in sorted(sublist, key=lambda peak: peak.startbp)]
+orderedbychr = [item for sublist in sorted(regions.intervals.values(),key=lambda genomicIntervalList: genomicIntervalList[0].chromosome) for item in sorted(sublist, key=lambda peak: peak.startbp)]
 puts_err("Calculating footprints...")
 
 if clargs.p:
