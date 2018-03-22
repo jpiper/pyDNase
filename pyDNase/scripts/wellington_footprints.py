@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import multiprocessing as mp
 import argparse, os
 from clint.textui import progress, puts_err

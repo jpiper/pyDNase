@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import argparse
 import pyDNase
 from clint.textui import progress
