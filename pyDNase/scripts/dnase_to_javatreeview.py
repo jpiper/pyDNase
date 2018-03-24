@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import argparse, pyDNase, csv, random
 import numpy as np
 from clint.textui import puts, progress

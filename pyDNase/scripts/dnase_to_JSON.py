@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import argparse, pyDNase
 from clint.textui import puts, progress
 parser = argparse.ArgumentParser(description='Writes a JSON file of DNase I cuts for regions from a BED file')

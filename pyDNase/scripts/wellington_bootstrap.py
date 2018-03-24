@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import pyDNase, pyDNase.footprinting
 import numpy as np
 from clint.textui import progress

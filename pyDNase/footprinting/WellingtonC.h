@@ -188,7 +188,7 @@ struct tuple2 * wellington(unsigned int const * const f,  unsigned int const * c
 				unsigned const int xBackward = b_bindingArray[i+halffpround+1];
 				unsigned const int nBackward = xBackward + rv_fpscores[i-halffpround];
 
-				if (xForward > 0 & xBackward > 0)
+				if (xForward > 0 && xBackward > 0)
 				{
 					float const p = (float)shoulder / (shoulder + fp_size);
 					float const score = bdtrc(xForward - 1, nForward, p) + bdtrc(xBackward - 1, nBackward, p);
@@ -238,7 +238,7 @@ struct tuple2 * wellington1D(unsigned int const * const f,  unsigned int const *
 				unsigned const int xBackward = b_bindingArray[i+halffpround+1];
 				unsigned const int nBackward = xBackward + rv_fpscores[i-halffpround];
 
-				if (xForward > 0 & xBackward > 0)
+				if (xForward > 0 && xBackward > 0)
 				{
 					float const p = (float)(shoulder*2) / ((shoulder*2) + fp_size);
 					float const score = bdtrc(xForward + xBackward - 1, nForward + nBackward, p);
@@ -367,7 +367,7 @@ struct tuple2 * diff_wellington(unsigned int const * const f,  unsigned int cons
 
 //        float t_score = 0.0;
 //
-//        if (xForwardt > 0 & xBackwardt > 0)
+//        if (xForwardt > 0 && xBackwardt > 0)
 //        {
 //            float const p = (float)shoulder / (shoulder + fp_size);
 //            t_score = bdtrc(xForwardt - 1, nForwardt, p) + bdtrc(xBackwardt - 1, nBackwardt, p);
@@ -395,7 +395,7 @@ struct tuple2 * diff_wellington(unsigned int const * const f,  unsigned int cons
 
             float prior_score;
 
-            if (xForward > 0 & xBackward > 0)
+            if (xForward > 0 && xBackward > 0)
             {
                 const float p = (float)shoulder / (shoulder + fp_size);
                 prior_score = bdtrc(xForward - 1, nForward, p) + bdtrc(xBackward - 1, nBackward, p);
@@ -417,7 +417,7 @@ struct tuple2 * diff_wellington(unsigned int const * const f,  unsigned int cons
                 unsigned const int nForward  = slice(t_f2,0,shoulder + fp_size);
                 unsigned const int xBackward = slice(t_r2,shoulder + fp_size,shoulder + shoulder + fp_size);
                 unsigned const int nBackward = slice(t_r2,shoulder,shoulder + shoulder + fp_size);
-                if (xForward > 0 & xBackward > 0)
+                if (xForward > 0 && xBackward > 0)
                 {
                     float const p = (float)shoulder / (shoulder + fp_size);
                     bootstrap_score[i] = bdtrc(xForward - 1, nForward, p) + bdtrc(xBackward - 1, nBackward, p);

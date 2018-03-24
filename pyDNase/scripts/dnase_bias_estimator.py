@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import os, argparse, tempfile, operator, pickle
 from collections import defaultdict
 import pybedtools, pysam
