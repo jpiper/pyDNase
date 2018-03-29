@@ -18,7 +18,7 @@ parser.add_argument("-fdrlimit", "--FDR_limit", help="Minimum p-value to be cons
 parser.add_argument("-pv","--pv_cutoffs", help=" (Provide multiple values separated by spaces) Select footprints using a range of pvalue cutoffs (default: -10 -20 -30 -40 -50 -75 -100 -300 -500 -700",default=[-10,-20,-30,-40,-50,-75,-100,-300,-500,-700],type=int, nargs="+")
 parser.add_argument("-dm","--dont-merge-footprints",action="store_true", help="Disables merging of overlapping footprints (Default: False)",default=False)
 parser.add_argument("-o","--output_prefix", help="The prefix for results files (default: <reads.regions>)",default="",type=str)
-parser.add_argument("-p", help="Number of processes to use (default: uses all CPUs)",default=0,type=int)
+parser.add_argument("-p", help="Number of processes to use, use 0 to use all cores (default: 1)",default=1,type=int)
 parser.add_argument("-A",action="store_true", help="ATAC-seq mode (default: False)",default=False)
 parser.add_argument("regions", help="BED file of the regions you want to footprint")
 parser.add_argument("reads", help="The BAM file containing the DNase-seq reads")
@@ -83,7 +83,7 @@ fdrout = open(os.path.relpath(clargs.outputdir) + "/" + clargs.output_prefix + "
 print("track type=wiggle_0", file=wigout)
 
 #Iterate in chromosome, basepair order
-orderedbychr = [item for sublist in sorted(regions.intervals.values(),key=lambda genomicIntervalList: genomicIntervalList[0].chromosome) for item in sorted(sublist, key=lambda peak: peak.startbp)]
+orderedbychr = [item for sublist in sorted(regions.intervals.values()) for item in sublist]  # Flatten the list of lists
 puts_err("Calculating footprints...")
 
 if clargs.p:

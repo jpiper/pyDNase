@@ -493,6 +493,93 @@ class GenomicInterval(object):
         """
         return self.endbp - self.startbp
 
+    def __lt__(self, other):
+        """
+        Implements foo < bar
+        """
+        if self.chromosome == other.chromosome:
+            if self.startbp < other.startbp:
+                return True
+            elif self.startbp == other.startbp:
+                if self.endbp < other.endbp:
+                    return True
+                else:
+                    return False
+            else:
+                return False
+        elif self.chromosome < other.chromosome:
+            return True
+        else:
+            return False
+
+    def __le__(self, other):
+        """
+        Implements foo <= bar
+        """
+        if self.chromosome == other.chromosome:
+            if self.startbp < other.startbp:
+                return True
+            elif self.startbp == other.startbp:
+                if self.endbp <= other.endbp:
+                    return True
+                else:
+                    return False
+            else:
+                return False
+        elif self.chromosome < other.chromosome:
+            return True
+        else:
+            return False
+
+    def __eq__(self, other):
+        """
+        Implements foo == bar
+        """
+        if self.chromosome == other.chromosome and \
+           self.startbp == other.startbp and \
+           self.endbp == other.endbp:
+            return True
+        return False
+
+    def __gt__(self, other):
+        """
+        Implements foo > bar
+        """
+        if self.chromosome == other.chromosome:
+            if self.startbp > other.startbp:
+                return True
+            elif self.startbp == other.startbp:
+                if self.endbp > other.endbp:
+                    return True
+                else:
+                    return False
+            else:
+                return False
+        elif self.chromosome > other.chromosome:
+            return True
+        else:
+            return False
+
+    def __ge__(self, other):
+        """
+        Implements foo >= bar
+        """
+        if self.chromosome == other.chromosome:
+            if self.startbp > other.startbp:
+                return True
+            elif self.startbp == other.startbp:
+                if self.endbp >= other.endbp:
+                    return True
+                else:
+                    return False
+            else:
+                return False
+        elif self.chromosome > other.chromosome:
+            return True
+        else:
+            return False
+
+
 class FASTAHandler(object):
     def __init__(self, fasta_file, vcf_file = None):
         self.ffile = pysam.Fastafile(fasta_file)
