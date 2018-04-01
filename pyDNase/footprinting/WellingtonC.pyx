@@ -34,7 +34,7 @@ cpdef float percentile(list N, float percent):
     cdef float k,d0,d1
     cdef unsigned int f, c
     if not N:
-        return None
+        return float("NaN")
     N = sorted(N)
     k = (len(N)-1) * percent
     f = <int>k

@@ -1,3 +1,11 @@
+0.3.0 - 2018-04-01
+==================
+* IMPORTANT: Default number of threads in `wellington_footprints.py` now set to 1 - set to 0 to use all cores
+* BUGFIX: Fix Cython code for latest Cython
+* BUGFIX: Logic fixes to underlying Wellington C code (@dpryan79)
+* BUGFIX: Shebangs added to python scripts (@dpryan79)
+* BUGFIX: Fix ability to compare `GenomicInterval` objects in python3 (@dpryan79)
+
 0.2.6 - 2018-01-27
 ==================
 * ENHANCEMENT: License changed to MIT

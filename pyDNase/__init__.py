@@ -251,7 +251,7 @@ class GenomicIntervalSet(object):
             IOError
         """
         try:
-            BEDfile = open(filename, 'rU')
+            BEDfile = open(filename, 'r')
         except IOError:
             errorString = "Cannot load BED file: {0}".format(filename)
             raise IOError(errorString)
